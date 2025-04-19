@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 210 100% 40%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -35,20 +36,24 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* ServiceNow specific colors */
+    --snow-blue: 213 100% 43%;
+    --snow-blue-light: 213 100% 95%;
+    --snow-blue-hover: 213 100% 38%;
+    --snow-header: 204 33% 97%;
+    --snow-border: 210 14% 89%;
+    --snow-background: 0 0% 100%;
+    --snow-text: 210 10% 23%;
+    --snow-text-light: 210 9% 45%;
+    --snow-required: 0 100% 42%;
   }
 
   .dark {
@@ -98,4 +103,235 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* ServiceNow-inspired styles */
+.servicenow-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0;
+  font-family: 'Source Sans Pro', Arial, sans-serif;
+  color: hsl(var(--snow-text));
+  background-color: hsl(var(--snow-background));
+}
+
+.servicenow-header {
+  background-color: hsl(var(--snow-header));
+  border-bottom: 1px solid hsl(var(--snow-border));
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.servicenow-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: hsl(var(--snow-text));
+}
+
+.servicenow-section {
+  border: 1px solid hsl(var(--snow-border));
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  background-color: white;
+}
+
+.servicenow-section-header {
+  background-color: hsl(var(--snow-header));
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  border-bottom: 1px solid hsl(var(--snow-border));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.servicenow-section-content {
+  padding: 1rem;
+}
+
+.servicenow-form-group {
+  margin-bottom: 1rem;
+}
+
+.servicenow-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.servicenow-required:after {
+  content: '*';
+  color: hsl(var(--snow-required));
+  margin-left: 0.25rem;
+}
+
+.servicenow-input,
+.servicenow-select,
+.servicenow-textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid hsl(var(--snow-border));
+  border-radius: 4px;
+  background-color: white;
+}
+
+.servicenow-checkbox {
+  margin-right: 0.5rem;
+}
+
+.servicenow-button {
+  background-color: hsl(var(--snow-blue));
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.servicenow-button:hover {
+  background-color: hsl(var(--snow-blue-hover));
+}
+
+.servicenow-button-secondary {
+  background-color: white;
+  color: hsl(var(--snow-blue));
+  border: 1px solid hsl(var(--snow-blue));
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.servicenow-button-secondary:hover {
+  background-color: hsl(var(--snow-blue-light));
+}
+
+.servicenow-add-button {
+  display: inline-flex;
+  align-items: center;
+  color: hsl(var(--snow-blue));
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  padding: 0.25rem 0;
+}
+
+.servicenow-add-button:hover {
+  text-decoration: underline;
+}
+
+.servicenow-helper-text {
+  color: hsl(var(--snow-text-light));
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.servicenow-error {
+  color: hsl(var(--snow-required));
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.servicenow-readonly {
+  background-color: hsl(var(--snow-header));
+  cursor: not-allowed;
+}
+
+.servicenow-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1rem;
+}
+
+.servicenow-col-6 {
+  grid-column: span 6;
+}
+
+.servicenow-col-4 {
+  grid-column: span 4;
+}
+
+.servicenow-col-3 {
+  grid-column: span 3;
+}
+
+.servicenow-col-12 {
+  grid-column: span 12;
+}
+
+.servicenow-repeatable-block {
+  border: 1px solid hsl(var(--snow-border));
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.servicenow-remove-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  color: hsl(var(--snow-required));
+  cursor: pointer;
+}
+
+.servicenow-summary {
+  background-color: hsl(var(--snow-blue-light));
+  border: 1px solid hsl(var(--snow-border));
+  border-radius: 4px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.servicenow-summary-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.servicenow-summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.servicenow-summary-row:last-child {
+  margin-bottom: 0;
+  font-weight: 600;
+}
+
+.servicenow-divider {
+  height: 1px;
+  background-color: hsl(var(--snow-border));
+  margin: 1rem 0;
+}
+
+.servicenow-toggle-indicator::before {
+  content: '▶';
+  display: inline-block;
+  margin-right: 0.5rem;
+  transition: transform 0.2s;
+}
+
+.servicenow-toggle-indicator.open::before {
+  transform: rotate(90deg);
+}
+
+.servicenow-hidden {
+  display: none;
+}
+
+.servicenow-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  border-top: 1px solid hsl(var(--snow-border));
 }
