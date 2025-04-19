@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 
@@ -801,21 +800,22 @@ const TravelForm = () => {
           )}
         </div>
 
-        {/* 3. FLIGHT REQUESTS */}
+        {/* 3. TRAVEL REQUIREMENTS */}
         <div className="servicenow-section">
           <div 
             className={`servicenow-section-header ${sections.flightRequests ? 'open' : ''}`} 
             onClick={() => toggleSection('flightRequests')}
           >
             <span className={`servicenow-toggle-indicator ${sections.flightRequests ? 'open' : ''}`}>
-              3. FLIGHT REQUESTS
+              3. TRAVEL REQUIREMENTS
             </span>
           </div>
           
           {sections.flightRequests && (
             <div className="servicenow-section-content">
-              <div className="servicenow-form-group">
-                <label className="servicenow-label">
+              {/* Flights */}
+              <div className="servicenow-form-group border-b pb-4 mb-4">
+                <label className="servicenow-label font-semibold">
                   <input 
                     type="checkbox" 
                     className="servicenow-checkbox" 
@@ -823,159 +823,144 @@ const TravelForm = () => {
                     checked={formData.requireFlights}
                     onChange={handleInputChange}
                   />
-                  Do you require flights?
+                  Flights Required
                 </label>
-              </div>
-              
-              {formData.requireFlights && (
-                <>
-                  {formErrors.flightLegs && (
-                    <div className="servicenow-error">{formErrors.flightLegs}</div>
-                  )}
-                  
-                  {formData.flightLegs.map((leg, index) => (
-                    <div key={leg.id} className="servicenow-repeatable-block">
-                      <button 
-                        type="button" 
-                        className="servicenow-remove-button"
-                        onClick={() => removeFlightLeg(leg.id)}
-                      >
-                        ✕
-                      </button>
-                      
-                      <div className="servicenow-grid">
-                        <div className="servicenow-col-6">
-                          <div className="servicenow-form-group">
-                            <label className="servicenow-label servicenow-required">From</label>
-                            <input 
-                              type="text" 
-                              className="servicenow-input"
-                              placeholder="Airport code or city"
-                              value={leg.from}
-                              onChange={(e) => updateFlightLegField(leg.id, 'from', e.target.value)}
-                              required
-                            />
-                            {formErrors[`flightLegs[${index}].from`] && (
-                              <div className="servicenow-error">{formErrors[`flightLegs[${index}].from`]}</div>
-                            )}
-                          </div>
-                        </div>
+                
+                {formData.requireFlights && (
+                  <>
+                    {formErrors.flightLegs && (
+                      <div className="servicenow-error">{formErrors.flightLegs}</div>
+                    )}
+                    
+                    {formData.flightLegs.map((leg, index) => (
+                      <div key={leg.id} className="servicenow-repeatable-block">
+                        <button 
+                          type="button" 
+                          className="servicenow-remove-button"
+                          onClick={() => removeFlightLeg(leg.id)}
+                        >
+                          ✕
+                        </button>
                         
-                        <div className="servicenow-col-6">
-                          <div className="servicenow-form-group">
-                            <label className="servicenow-label servicenow-required">To</label>
-                            <input 
-                              type="text" 
-                              className="servicenow-input"
-                              placeholder="Airport code or city"
-                              value={leg.to}
-                              onChange={(e) => updateFlightLegField(leg.id, 'to', e.target.value)}
-                              required
-                            />
-                            {formErrors[`flightLegs[${index}].to`] && (
-                              <div className="servicenow-error">{formErrors[`flightLegs[${index}].to`]}</div>
-                            )}
+                        <div className="servicenow-grid">
+                          <div className="servicenow-col-6">
+                            <div className="servicenow-form-group">
+                              <label className="servicenow-label servicenow-required">From</label>
+                              <input 
+                                type="text" 
+                                className="servicenow-input"
+                                placeholder="Airport code or city"
+                                value={leg.from}
+                                onChange={(e) => updateFlightLegField(leg.id, 'from', e.target.value)}
+                                required
+                              />
+                              {formErrors[`flightLegs[${index}].from`] && (
+                                <div className="servicenow-error">{formErrors[`flightLegs[${index}].from`]}</div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        
-                        <div className="servicenow-col-4">
-                          <div className="servicenow-form-group">
-                            <label className="servicenow-label servicenow-required">Date</label>
-                            <input 
-                              type="date" 
-                              className="servicenow-input"
-                              value={leg.date}
-                              onChange={(e) => updateFlightLegField(leg.id, 'date', e.target.value)}
-                              required
-                            />
-                            {formErrors[`flightLegs[${index}].date`] && (
-                              <div className="servicenow-error">{formErrors[`flightLegs[${index}].date`]}</div>
-                            )}
+                          
+                          <div className="servicenow-col-6">
+                            <div className="servicenow-form-group">
+                              <label className="servicenow-label servicenow-required">To</label>
+                              <input 
+                                type="text" 
+                                className="servicenow-input"
+                                placeholder="Airport code or city"
+                                value={leg.to}
+                                onChange={(e) => updateFlightLegField(leg.id, 'to', e.target.value)}
+                                required
+                              />
+                              {formErrors[`flightLegs[${index}].to`] && (
+                                <div className="servicenow-error">{formErrors[`flightLegs[${index}].to`]}</div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        
-                        <div className="servicenow-col-4">
-                          <div className="servicenow-form-group">
-                            <label className="servicenow-label">Preferred Time</label>
-                            <input 
-                              type="time" 
-                              className="servicenow-input"
-                              value={leg.time}
-                              onChange={(e) => updateFlightLegField(leg.id, 'time', e.target.value)}
-                            />
+                          
+                          <div className="servicenow-col-4">
+                            <div className="servicenow-form-group">
+                              <label className="servicenow-label servicenow-required">Date</label>
+                              <input 
+                                type="date" 
+                                className="servicenow-input"
+                                value={leg.date}
+                                onChange={(e) => updateFlightLegField(leg.id, 'date', e.target.value)}
+                                required
+                              />
+                              {formErrors[`flightLegs[${index}].date`] && (
+                                <div className="servicenow-error">{formErrors[`flightLegs[${index}].date`]}</div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        
-                        <div className="servicenow-col-4">
-                          <div className="servicenow-form-group">
-                            <label className="servicenow-label">Airline Preference</label>
-                            <input 
-                              type="text" 
-                              className="servicenow-input"
-                              value={leg.airlinePreference}
-                              onChange={(e) => updateFlightLegField(leg.id, 'airlinePreference', e.target.value)}
-                            />
+                          
+                          <div className="servicenow-col-4">
+                            <div className="servicenow-form-group">
+                              <label className="servicenow-label">Preferred Time</label>
+                              <input 
+                                type="time" 
+                                className="servicenow-input"
+                                value={leg.time}
+                                onChange={(e) => updateFlightLegField(leg.id, 'time', e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          
+                          <div className="servicenow-col-4">
+                            <div className="servicenow-form-group">
+                              <label className="servicenow-label">Airline Preference</label>
+                              <input 
+                                type="text" 
+                                className="servicenow-input"
+                                value={leg.airlinePreference}
+                                onChange={(e) => updateFlightLegField(leg.id, 'airlinePreference', e.target.value)}
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                  
-                  <button 
-                    type="button" 
-                    className="servicenow-add-button"
-                    onClick={addFlightLeg}
-                  >
-                    + Add another leg
-                  </button>
-                  
-                  <div className="servicenow-form-group mt-4">
-                    <label className="servicenow-label">
-                      <input 
-                        type="checkbox" 
-                        className="servicenow-checkbox" 
-                        name="returnFlight"
-                        checked={formData.returnFlight}
-                        onChange={handleInputChange}
-                      />
-                      Return flight required?
-                    </label>
-                  </div>
-                  
-                  <div className="servicenow-form-group">
-                    <label className="servicenow-label">Baggage Preference</label>
-                    <select 
-                      className="servicenow-select"
-                      name="baggage"
-                      value={formData.baggage}
-                      onChange={handleInputChange}
+                    ))}
+                    
+                    <button 
+                      type="button" 
+                      className="servicenow-add-button"
+                      onClick={addFlightLeg}
                     >
-                      <option value="carry-on">Carry-on only</option>
-                      <option value="checked">Checked baggage</option>
-                      <option value="none">None</option>
-                    </select>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-        </div>
+                      + Add another leg
+                    </button>
+                    
+                    <div className="servicenow-form-group mt-4">
+                      <label className="servicenow-label">
+                        <input 
+                          type="checkbox" 
+                          className="servicenow-checkbox" 
+                          name="returnFlight"
+                          checked={formData.returnFlight}
+                          onChange={handleInputChange}
+                        />
+                        Return flight required?
+                      </label>
+                    </div>
+                    
+                    <div className="servicenow-form-group">
+                      <label className="servicenow-label">Baggage Preference</label>
+                      <select 
+                        className="servicenow-select"
+                        name="baggage"
+                        value={formData.baggage}
+                        onChange={handleInputChange}
+                      >
+                        <option value="carry-on">Carry-on only</option>
+                        <option value="checked">Checked baggage</option>
+                        <option value="none">None</option>
+                      </select>
+                    </div>
+                  </>
+                )}
+              </div>
 
-        {/* 4. FERRY REQUESTS */}
-        <div className="servicenow-section">
-          <div 
-            className={`servicenow-section-header ${sections.ferryRequests ? 'open' : ''}`} 
-            onClick={() => toggleSection('ferryRequests')}
-          >
-            <span className={`servicenow-toggle-indicator ${sections.ferryRequests ? 'open' : ''}`}>
-              4. FERRY REQUESTS
-            </span>
-          </div>
-          
-          {sections.ferryRequests && (
-            <div className="servicenow-section-content">
-              <div className="servicenow-form-group">
-                <label className="servicenow-label">
+              {/* Ferry */}
+              <div className="servicenow-form-group border-b pb-4 mb-4">
+                <label className="servicenow-label font-semibold">
                   <input 
                     type="checkbox" 
                     className="servicenow-checkbox" 
@@ -983,130 +968,115 @@ const TravelForm = () => {
                     checked={formData.requireFerry}
                     onChange={handleInputChange}
                   />
-                  Do you require a ferry?
+                  Ferry Required
                 </label>
-              </div>
-              
-              {formData.requireFerry && (
-                <>
-                  {formErrors.ferries && (
-                    <div className="servicenow-error">{formErrors.ferries}</div>
-                  )}
-                  
-                  {formData.ferries.map((ferry, index) => (
-                    <div key={ferry.id} className="servicenow-repeatable-block">
-                      <button 
-                        type="button" 
-                        className="servicenow-remove-button"
-                        onClick={() => removeFerry(ferry.id)}
-                      >
-                        ✕
-                      </button>
-                      
-                      <div className="servicenow-grid">
-                        <div className="servicenow-col-6">
-                          <div className="servicenow-form-group">
-                            <label className="servicenow-label servicenow-required">From</label>
-                            <input 
-                              type="text" 
-                              className="servicenow-input"
-                              value={ferry.from}
-                              onChange={(e) => updateFerryField(ferry.id, 'from', e.target.value)}
-                              required
-                            />
-                            {formErrors[`ferries[${index}].from`] && (
-                              <div className="servicenow-error">{formErrors[`ferries[${index}].from`]}</div>
-                            )}
-                          </div>
-                        </div>
+                
+                {formData.requireFerry && (
+                  <>
+                    {formErrors.ferries && (
+                      <div className="servicenow-error">{formErrors.ferries}</div>
+                    )}
+                    
+                    {formData.ferries.map((ferry, index) => (
+                      <div key={ferry.id} className="servicenow-repeatable-block">
+                        <button 
+                          type="button" 
+                          className="servicenow-remove-button"
+                          onClick={() => removeFerry(ferry.id)}
+                        >
+                          ✕
+                        </button>
                         
-                        <div className="servicenow-col-6">
-                          <div className="servicenow-form-group">
-                            <label className="servicenow-label servicenow-required">To</label>
-                            <input 
-                              type="text" 
-                              className="servicenow-input"
-                              value={ferry.to}
-                              onChange={(e) => updateFerryField(ferry.id, 'to', e.target.value)}
-                              required
-                            />
-                            {formErrors[`ferries[${index}].to`] && (
-                              <div className="servicenow-error">{formErrors[`ferries[${index}].to`]}</div>
-                            )}
+                        <div className="servicenow-grid">
+                          <div className="servicenow-col-6">
+                            <div className="servicenow-form-group">
+                              <label className="servicenow-label servicenow-required">From</label>
+                              <input 
+                                type="text" 
+                                className="servicenow-input"
+                                value={ferry.from}
+                                onChange={(e) => updateFerryField(ferry.id, 'from', e.target.value)}
+                                required
+                              />
+                              {formErrors[`ferries[${index}].from`] && (
+                                <div className="servicenow-error">{formErrors[`ferries[${index}].from`]}</div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        
-                        <div className="servicenow-col-6">
-                          <div className="servicenow-form-group">
-                            <label className="servicenow-label servicenow-required">Date</label>
-                            <input 
-                              type="date" 
-                              className="servicenow-input"
-                              value={ferry.date}
-                              onChange={(e) => updateFerryField(ferry.id, 'date', e.target.value)}
-                              required
-                            />
-                            {formErrors[`ferries[${index}].date`] && (
-                              <div className="servicenow-error">{formErrors[`ferries[${index}].date`]}</div>
-                            )}
+                          
+                          <div className="servicenow-col-6">
+                            <div className="servicenow-form-group">
+                              <label className="servicenow-label servicenow-required">To</label>
+                              <input 
+                                type="text" 
+                                className="servicenow-input"
+                                value={ferry.to}
+                                onChange={(e) => updateFerryField(ferry.id, 'to', e.target.value)}
+                                required
+                              />
+                              {formErrors[`ferries[${index}].to`] && (
+                                <div className="servicenow-error">{formErrors[`ferries[${index}].to`]}</div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        
-                        <div className="servicenow-col-6">
-                          <div className="servicenow-form-group">
-                            <label className="servicenow-label">Time</label>
-                            <input 
-                              type="time" 
-                              className="servicenow-input"
-                              value={ferry.time}
-                              onChange={(e) => updateFerryField(ferry.id, 'time', e.target.value)}
-                            />
+                          
+                          <div className="servicenow-col-6">
+                            <div className="servicenow-form-group">
+                              <label className="servicenow-label servicenow-required">Date</label>
+                              <input 
+                                type="date" 
+                                className="servicenow-input"
+                                value={ferry.date}
+                                onChange={(e) => updateFerryField(ferry.id, 'date', e.target.value)}
+                                required
+                              />
+                              {formErrors[`ferries[${index}].date`] && (
+                                <div className="servicenow-error">{formErrors[`ferries[${index}].date`]}</div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        
-                        <div className="servicenow-col-12">
-                          <div className="servicenow-form-group">
-                            <label className="servicenow-label">Notes</label>
-                            <textarea 
-                              className="servicenow-textarea"
-                              value={ferry.notes}
-                              onChange={(e) => updateFerryField(ferry.id, 'notes', e.target.value)}
-                              placeholder="Vehicle details, etc."
-                            ></textarea>
+                          
+                          <div className="servicenow-col-6">
+                            <div className="servicenow-form-group">
+                              <label className="servicenow-label">Time</label>
+                              <input 
+                                type="time" 
+                                className="servicenow-input"
+                                value={ferry.time}
+                                onChange={(e) => updateFerryField(ferry.id, 'time', e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          
+                          <div className="servicenow-col-12">
+                            <div className="servicenow-form-group">
+                              <label className="servicenow-label">Notes</label>
+                              <textarea 
+                                className="servicenow-textarea"
+                                value={ferry.notes}
+                                onChange={(e) => updateFerryField(ferry.id, 'notes', e.target.value)}
+                                placeholder="Vehicle details, etc."
+                              ></textarea>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                  
-                  <button 
-                    type="button" 
-                    className="servicenow-add-button"
-                    onClick={addFerry}
-                  >
-                    + Add another ferry
-                  </button>
-                </>
-              )}
-            </div>
-          )}
-        </div>
+                    ))}
+                    
+                    <button 
+                      type="button" 
+                      className="servicenow-add-button"
+                      onClick={addFerry}
+                    >
+                      + Add another ferry
+                    </button>
+                  </>
+                )}
+              </div>
 
-        {/* 5. CAR HIRE */}
-        <div className="servicenow-section">
-          <div 
-            className={`servicenow-section-header ${sections.carHire ? 'open' : ''}`} 
-            onClick={() => toggleSection('carHire')}
-          >
-            <span className={`servicenow-toggle-indicator ${sections.carHire ? 'open' : ''}`}>
-              5. CAR HIRE
-            </span>
-          </div>
-          
-          {sections.carHire && (
-            <div className="servicenow-section-content">
-              <div className="servicenow-form-group">
-                <label className="servicenow-label">
+              {/* Car Hire */}
+              <div className="servicenow-form-group border-b pb-4 mb-4">
+                <label className="servicenow-label font-semibold">
                   <input 
                     type="checkbox" 
                     className="servicenow-checkbox" 
@@ -1114,107 +1084,92 @@ const TravelForm = () => {
                     checked={formData.requireCarHire}
                     onChange={handleInputChange}
                   />
-                  Do you require car hire?
+                  Car Hire Required
                 </label>
-              </div>
-              
-              {formData.requireCarHire && (
-                <>
-                  <div className="servicenow-form-group">
-                    <label className="servicenow-label">Pickup Location</label>
-                    <input 
-                      type="text" 
-                      className="servicenow-input"
-                      value={formData.carHire.pickupLocation}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  
-                  <div className="servicenow-form-group">
-                    <label className="servicenow-label">Pickup Date</label>
-                    <input 
-                      type="date" 
-                      className="servicenow-input"
-                      value={formData.carHire.pickupDate}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  
-                  <div className="servicenow-form-group">
-                    <label className="servicenow-label">Drop-off Location</label>
-                    <input 
-                      type="text" 
-                      className="servicenow-input"
-                      value={formData.carHire.dropoffLocation}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  
-                  <div className="servicenow-form-group">
-                    <label className="servicenow-label">Drop-off Date</label>
-                    <input 
-                      type="date" 
-                      className="servicenow-input"
-                      value={formData.carHire.dropoffDate}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  
-                  <div className="servicenow-form-group">
-                    <label className="servicenow-label">Car Type</label>
-                    <input 
-                      type="text" 
-                      className="servicenow-input"
-                      value={formData.carHire.carType}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  
-                  <div className="servicenow-form-group">
-                    <label className="servicenow-label">
-                      <input 
-                        type="checkbox" 
-                        className="servicenow-checkbox" 
-                        name="carHire.shared"
-                        checked={formData.carHire.shared}
-                        onChange={handleInputChange}
-                      />
-                      Shared car?
-                    </label>
-                  </div>
-                  
-                  {formData.carHire.shared && (
+                
+                {formData.requireCarHire && (
+                  <>
                     <div className="servicenow-form-group">
-                      <label className="servicenow-label">Shared with</label>
+                      <label className="servicenow-label">Pickup Location</label>
                       <input 
                         type="text" 
                         className="servicenow-input"
-                        value={formData.carHire.sharedWith}
+                        value={formData.carHire.pickupLocation}
                         onChange={handleInputChange}
                       />
                     </div>
-                  )}
-                </>
-              )}
-            </div>
-          )}
-        </div>
+                    
+                    <div className="servicenow-form-group">
+                      <label className="servicenow-label">Pickup Date</label>
+                      <input 
+                        type="date" 
+                        className="servicenow-input"
+                        value={formData.carHire.pickupDate}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    
+                    <div className="servicenow-form-group">
+                      <label className="servicenow-label">Drop-off Location</label>
+                      <input 
+                        type="text" 
+                        className="servicenow-input"
+                        value={formData.carHire.dropoffLocation}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    
+                    <div className="servicenow-form-group">
+                      <label className="servicenow-label">Drop-off Date</label>
+                      <input 
+                        type="date" 
+                        className="servicenow-input"
+                        value={formData.carHire.dropoffDate}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    
+                    <div className="servicenow-form-group">
+                      <label className="servicenow-label">Car Type</label>
+                      <input 
+                        type="text" 
+                        className="servicenow-input"
+                        value={formData.carHire.carType}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    
+                    <div className="servicenow-form-group">
+                      <label className="servicenow-label">
+                        <input 
+                          type="checkbox" 
+                          className="servicenow-checkbox" 
+                          name="carHire.shared"
+                          checked={formData.carHire.shared}
+                          onChange={handleInputChange}
+                        />
+                        Shared car?
+                      </label>
+                    </div>
+                    
+                    {formData.carHire.shared && (
+                      <div className="servicenow-form-group">
+                        <label className="servicenow-label">Shared with</label>
+                        <input 
+                          type="text" 
+                          className="servicenow-input"
+                          value={formData.carHire.sharedWith}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
 
-        {/* 6. ACCOMMODATION */}
-        <div className="servicenow-section">
-          <div 
-            className={`servicenow-section-header ${sections.accommodation ? 'open' : ''}`} 
-            onClick={() => toggleSection('accommodation')}
-          >
-            <span className={`servicenow-toggle-indicator ${sections.accommodation ? 'open' : ''}`}>
-              6. ACCOMMODATION
-            </span>
-          </div>
-          
-          {sections.accommodation && (
-            <div className="servicenow-section-content">
+              {/* Accommodation */}
               <div className="servicenow-form-group">
-                <label className="servicenow-label">
+                <label className="servicenow-label font-semibold">
                   <input 
                     type="checkbox" 
                     className="servicenow-checkbox" 
@@ -1222,50 +1177,50 @@ const TravelForm = () => {
                     checked={formData.requireAccommodation}
                     onChange={handleInputChange}
                   />
-                  Do you require accommodation?
+                  Accommodation Required
                 </label>
+                
+                {formData.requireAccommodation && (
+                  <>
+                    <div className="servicenow-form-group">
+                      <label className="servicenow-label">Accommodation Type</label>
+                      <select 
+                        className="servicenow-select"
+                        name="accommodation.type"
+                        value={formData.accommodation.type}
+                        onChange={handleInputChange}
+                      >
+                        <option value="">Select type</option>
+                        <option value="hotel">Hotel</option>
+                        <option value="private">Private</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                    
+                    <div className="servicenow-form-group">
+                      <label className="servicenow-label">Notes</label>
+                      <textarea 
+                        className="servicenow-textarea"
+                        value={formData.accommodation.notes}
+                        onChange={handleInputChange}
+                        placeholder="Any additional notes"
+                      ></textarea>
+                    </div>
+                  </>
+                )}
               </div>
-              
-              {formData.requireAccommodation && (
-                <>
-                  <div className="servicenow-form-group">
-                    <label className="servicenow-label">Accommodation Type</label>
-                    <select 
-                      className="servicenow-select"
-                      name="accommodation.type"
-                      value={formData.accommodation.type}
-                      onChange={handleInputChange}
-                    >
-                      <option value="">Select type</option>
-                      <option value="hotel">Hotel</option>
-                      <option value="private">Private</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                  
-                  <div className="servicenow-form-group">
-                    <label className="servicenow-label">Notes</label>
-                    <textarea 
-                      className="servicenow-textarea"
-                      value={formData.accommodation.notes}
-                      onChange={handleInputChange}
-                      placeholder="Any additional notes"
-                    ></textarea>
-                  </div>
-                </>
-              )}
             </div>
           )}
         </div>
 
-        {/* 7. LAFHA */}
+        {/* 4. LAFHA */}
         <div className="servicenow-section">
           <div 
             className={`servicenow-section-header ${sections.lafha ? 'open' : ''}`} 
             onClick={() => toggleSection('lafha')}
           >
             <span className={`servicenow-toggle-indicator ${sections.lafha ? 'open' : ''}`}>
-              7. LAFHA
+              4. LAFHA
             </span>
           </div>
           
@@ -1376,14 +1331,14 @@ const TravelForm = () => {
           )}
         </div>
 
-        {/* 8. EMERGENCY CONTACT */}
+        {/* 5. EMERGENCY CONTACT */}
         <div className="servicenow-section">
           <div 
             className={`servicenow-section-header ${sections.emergencyContact ? 'open' : ''}`} 
             onClick={() => toggleSection('emergencyContact')}
           >
             <span className={`servicenow-toggle-indicator ${sections.emergencyContact ? 'open' : ''}`}>
-              8. EMERGENCY CONTACT
+              5. EMERGENCY CONTACT
             </span>
           </div>
           
@@ -1439,14 +1394,14 @@ const TravelForm = () => {
           )}
         </div>
 
-        {/* 9. DECLARATIONS */}
+        {/* 6. DECLARATIONS */}
         <div className="servicenow-section">
           <div 
             className={`servicenow-section-header ${sections.declarations ? 'open' : ''}`} 
             onClick={() => toggleSection('declarations')}
           >
             <span className={`servicenow-toggle-indicator ${sections.declarations ? 'open' : ''}`}>
-              9. DECLARATIONS
+              6. DECLARATIONS
             </span>
           </div>
           
@@ -1520,14 +1475,14 @@ const TravelForm = () => {
           )}
         </div>
 
-        {/* 10. COST PREVIEW */}
+        {/* 7. COST PREVIEW */}
         <div className="servicenow-section">
           <div 
             className={`servicenow-section-header ${sections.costPreview ? 'open' : ''}`} 
             onClick={() => toggleSection('costPreview')}
           >
             <span className={`servicenow-toggle-indicator ${sections.costPreview ? 'open' : ''}`}>
-              10. COST PREVIEW
+              7. COST PREVIEW
             </span>
           </div>
           
