@@ -1,10 +1,9 @@
 
 import React from 'react';
 import { Button } from '../ui/button';
-import { TravelFormProvider } from './TravelFormProvider';
+import { TravelFormProvider, useTravelForm } from './TravelFormProvider';
 import { TravellerDetails } from './TravellerDetails';
 import { TravelDetails } from './TravelDetails';
-import { useTravelForm } from './TravelFormProvider';
 
 const TravelFormContent = () => {
   const { currentStep, setCurrentStep, formData } = useTravelForm();
