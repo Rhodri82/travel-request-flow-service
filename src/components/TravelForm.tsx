@@ -928,3 +928,40 @@ const TravelForm = () => {
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Preferred Time
                         </label>
+                        <Input
+                          type="time"
+                          value={leg.time}
+                          onChange={(e) => updateFlightLegField(leg.id, 'time', e.target.value)}
+                          className="w-full"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  className="text-blue-600 hover:text-blue-800 font-medium flex items-center"
+                  onClick={addFlightLeg}
+                >
+                  + Add Flight Leg
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="flex justify-end mt-6">
+          <button 
+            type="submit" 
+            className="px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Submit Request
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default TravelForm;
