@@ -46,6 +46,7 @@ interface AccommodationDetails {
 }
 
 interface LAFHADetails {
+  id: string;
   category: string;
   rate: number;
   days: number;
@@ -76,7 +77,9 @@ interface TravelFormData {
   carHire: CarHire;
   requireAccommodation: boolean;
   accommodation: AccommodationDetails;
+  requireLAFHA: boolean;
   lafha: LAFHADetails[];
+  requireEmergencyContact: boolean;
   emergencyContact: EmergencyContact;
   declarations: {
     correctAndApproved: boolean;
@@ -125,7 +128,9 @@ const defaultFormData: TravelFormData = {
     type: 'hotel',
     notes: ''
   },
+  requireLAFHA: false,
   lafha: [],
+  requireEmergencyContact: false,
   emergencyContact: {
     name: '',
     phone: '',
@@ -414,6 +419,7 @@ const TravelForm = () => {
   // Add LAFHA entry
   const addLAFHA = () => {
     const newLAFHA: LAFHADetails = {
+      id: Date.now().toString(),
       category: 'Full Day (OR03)',
       rate: LAFHA_RATES['Full Day (OR03)'],
       days: formData.nights
