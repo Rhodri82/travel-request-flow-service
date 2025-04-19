@@ -1,96 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
-import { Smartphone } from 'lucide-react';
 import { Input } from "@/components/ui/input";
-
-// Type definitions for our form data
-interface Traveller {
-  id: string;
-  fullName: string;
-  employeeId: string;
-  region: string;
-  costCentre: string;
-  mobile: string;
-  role?: string;
-}
-
-interface FlightLeg {
-  id: string;
-  from: string;
-  to: string;
-  date: string;
-  time: string;
-  airlinePreference: string;
-}
-
-interface Ferry {
-  id: string;
-  from: string;
-  to: string;
-  date: string;
-  time: string;
-  notes: string;
-}
-
-interface CarHire {
-  pickupLocation: string;
-  pickupDate: string;
-  dropoffLocation: string;
-  dropoffDate: string;
-  carType: string;
-  shared: boolean;
-  sharedWith: string;
-}
-
-interface AccommodationDetails {
-  type: 'hotel' | 'private' | 'other';
-  notes: string;
-}
-
-interface LAFHADetails {
-  id: string;
-  category: string;
-  rate: number;
-  days: number;
-}
-
-interface EmergencyContact {
-  name: string;
-  phone: string;
-  relationship: string;
-}
-
-interface TravelFormData {
-  bookingOnBehalf: boolean;
-  travellers: Traveller[];
-  purpose: string;
-  travelType: string;
-  fromDate: string;
-  toDate: string;
-  destination: string;
-  nights: number;
-  requireFlights: boolean;
-  flightLegs: FlightLeg[];
-  returnFlight: boolean;
-  baggage: string;
-  requireFerry: boolean;
-  ferries: Ferry[];
-  requireCarHire: boolean;
-  carHire: CarHire;
-  requireAccommodation: boolean;
-  accommodation: AccommodationDetails;
-  requireLAFHA: boolean;
-  lafha: LAFHADetails[];
-  requireEmergencyContact: boolean;
-  emergencyContact: EmergencyContact;
-  declarations: {
-    correctAndApproved: boolean;
-    payrollDeduction: boolean;
-    audit: boolean;
-    ctmBookings: boolean;
-    noPersonalCards: boolean;
-  }
-}
+import ContactInformation from './travel/ContactInformation';
+import LAFHASection from './travel/LAFHASection';
+import { TravelFormData, Traveller, FlightLeg, Ferry, LAFHADetails } from '@/types/travel';
+import { LAFHA_RATES } from '@/constants/lafha';
 
 // Default form data
 const defaultFormData: TravelFormData = {
@@ -147,44 +61,14 @@ const defaultFormData: TravelFormData = {
   }
 };
 
-// LAFHA rates data from requirements
-const LAFHA_RATES = {
-  'Full Day (OR03)': 148.70,
-  'Private (OR23)': 268.34,
-  'Employee-arranged (OR24)': 289.70,
-  'Remote Area': 41.90,
-  'Short Notice / Substandard': 41.90,
-  'Incidentals (0A57)': 12.12,
-  'Breakfast': 32.72,
-  'Lunch': 46.51,
-  'Dinner': 69.47
-};
-
 const TravelForm = () => {
   const [formData, setFormData] = useState<TravelFormData>(defaultFormData);
-  const [sections, setSections] = useState({
-    travellerDetails: true,
-    purposeAndDates: true,
-    travelRequirements: true,
-    lafha: true,
-    declarations: true,
-    emergencyContact: true,
-    costPreview: true
-  });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [formValid, setFormValid] = useState(false);
   const [costEstimate, setCostEstimate] = useState(0);
   const { toast } = useToast();
 
-  // Toggle section visibility
-  const toggleSection = (section: keyof typeof sections) => {
-    setSections({
-      ...sections,
-      [section]: !sections[section]
-    });
-  };
-
-  // Calculate number of nights based on dates
+  // Effect for calculating nights based on dates
   useEffect(() => {
     if (formData.fromDate && formData.toDate) {
       const start = new Date(formData.fromDate);
@@ -199,30 +83,26 @@ const TravelForm = () => {
     }
   }, [formData.fromDate, formData.toDate]);
 
-  // Determine LAFHA eligibility and classification
+  // Effect for LAFHA eligibility and calculations
   useEffect(() => {
     if (formData.requireAccommodation &&
       (formData.accommodation.type === 'private' || formData.accommodation.type === 'other')) {
-      // Check for LAFHA eligibility conditions
-      const eligible = true; // In a real app, we'd have more complex logic here
+      const eligible = true;
       
       if (eligible) {
-        // Determine LAFHA type based on duration
         const days = formData.nights;
         let lafhaType = '';
         
         if (days > 21) {
           lafhaType = 'LAFHA - FBT applies';
-        } else if (days > 90) { // Cumulative would need more tracking data
+        } else if (days > 90) {
           lafhaType = 'LAFHA - FBT applies';
         } else {
           lafhaType = 'Travel Allowance - PAYGW';
         }
         
-        // Check for 12+ month reportable LAFHA
         if (days > 365) {
           lafhaType = 'Reportable LAFHA (non-exempt)';
-          // Show warning about exceeding 12 months
           toast({
             title: "Warning",
             description: "Trip exceeds 12 months - reportable LAFHA (non-exempt) applies",
@@ -230,16 +110,14 @@ const TravelForm = () => {
           });
         }
         
-        // Calculate default LAFHA based on type and duration
         const defaultRate = formData.accommodation.type === 'private' 
           ? LAFHA_RATES['Private (OR23)'] 
           : LAFHA_RATES['Employee-arranged (OR24)'];
           
-        // Set LAFHA details if none exist yet
         if (formData.lafha.length === 0) {
           setFormData(prev => ({
             ...prev,
-            requireLAFHA: true, // Auto-enable LAFHA
+            requireLAFHA: true,
             lafha: [{
               id: Date.now().toString(),
               category: formData.accommodation.type === 'private' ? 'Private (OR23)' : 'Employee-arranged (OR24)',
@@ -252,17 +130,12 @@ const TravelForm = () => {
     }
   }, [formData.accommodation, formData.requireAccommodation, formData.nights]);
 
-  // Calculate cost estimate
+  // Effect for cost estimate calculations
   useEffect(() => {
     let total = 0;
-    
-    // Add LAFHA costs
     formData.lafha.forEach(item => {
       total += item.rate * item.days;
     });
-    
-    // In a real app, we would estimate other costs as well
-    
     setCostEstimate(total);
   }, [formData.lafha]);
 
@@ -271,7 +144,6 @@ const TravelForm = () => {
     const { name, value, type } = e.target;
     const checked = type === 'checkbox' ? (e.target as HTMLInputElement).checked : undefined;
     
-    // Handle checkbox inputs
     if (type === 'checkbox') {
       if (name.startsWith('declarations.')) {
         const declarationKey = name.split('.')[1] as keyof typeof formData.declarations;
@@ -297,15 +169,11 @@ const TravelForm = () => {
           [name]: checked
         }));
       }
-    } 
-    // Handle all other inputs
-    else {
-      // Handle nested properties
+    } else {
       if (name.includes('.')) {
         const [parentKey, childKey] = name.split('.');
         
         if (parentKey === 'lafha') {
-          // Handle LAFHA array updates
           const index = parseInt(childKey);
           const fieldName = name.split('.')[2];
           
@@ -331,9 +199,7 @@ const TravelForm = () => {
             }
           }));
         }
-      } 
-      // Handle top-level properties
-      else {
+      } else {
         setFormData(prev => ({
           ...prev,
           [name]: value
@@ -447,13 +313,12 @@ const TravelForm = () => {
     }));
   };
 
-  // Add LAFHA entry
   const addLAFHA = () => {
     const newLAFHA: LAFHADetails = {
       id: Date.now().toString(),
       category: 'Full Day (OR03)',
       rate: LAFHA_RATES['Full Day (OR03)'],
-      days: formData.nights || 1 // Default to 1 if nights is 0
+      days: formData.nights || 1
     };
     
     setFormData(prev => ({
@@ -462,7 +327,6 @@ const TravelForm = () => {
     }));
   };
 
-  // Remove LAFHA entry
   const removeLAFHA = (index: number) => {
     setFormData(prev => {
       const updatedLafha = [...prev.lafha];
@@ -470,19 +334,16 @@ const TravelForm = () => {
       return {
         ...prev,
         lafha: updatedLafha,
-        // If no LAFHA entries left, disable LAFHA requirement
         requireLAFHA: updatedLafha.length > 0 ? prev.requireLAFHA : false
       };
     });
   };
 
-  // Update LAFHA entry (fixed to correctly handle the category change with rate update)
   const updateLAFHA = (index: number, field: keyof LAFHADetails, value: any) => {
     setFormData(prev => {
       const updatedLafha = [...prev.lafha];
       
       if (updatedLafha[index]) {
-        // If updating category, also update the rate
         if (field === 'category' && typeof value === 'string') {
           updatedLafha[index] = {
             ...updatedLafha[index],
@@ -504,11 +365,9 @@ const TravelForm = () => {
     });
   };
 
-  // Validate form before submission
   const validateForm = () => {
     const errors: Record<string, string> = {};
     
-    // Required fields validation
     if (!formData.travellers[0].fullName) errors['travellers[0].fullName'] = 'Full name is required';
     if (!formData.travellers[0].employeeId) errors['travellers[0].employeeId'] = 'Employee ID is required';
     if (!formData.travellers[0].costCentre) errors['travellers[0].costCentre'] = 'Cost centre is required';
@@ -519,31 +378,26 @@ const TravelForm = () => {
     if (!formData.toDate) errors.toDate = 'To date is required';
     if (!formData.destination) errors.destination = 'Destination is required';
     
-    // Flight validation
     if (formData.requireFlights && formData.flightLegs.length === 0) {
       errors.flightLegs = 'At least one flight leg is required';
     }
     
-    // Flight legs validation
     formData.flightLegs.forEach((leg, index) => {
       if (!leg.from) errors[`flightLegs[${index}].from`] = 'From airport is required';
       if (!leg.to) errors[`flightLegs[${index}].to`] = 'To airport is required';
       if (!leg.date) errors[`flightLegs[${index}].date`] = 'Date is required';
     });
     
-    // Ferry validation
     if (formData.requireFerry && formData.ferries.length === 0) {
       errors.ferries = 'At least one ferry is required';
     }
     
-    // Ferry details validation
     formData.ferries.forEach((ferry, index) => {
       if (!ferry.from) errors[`ferries[${index}].from`] = 'From location is required';
       if (!ferry.to) errors[`ferries[${index}].to`] = 'To location is required';
       if (!ferry.date) errors[`ferries[${index}].date`] = 'Date is required';
     });
     
-    // Car hire validation
     if (formData.requireCarHire) {
       if (!formData.carHire.pickupLocation) errors['carHire.pickupLocation'] = 'Pickup location is required';
       if (!formData.carHire.pickupDate) errors['carHire.pickupDate'] = 'Pickup date is required';
@@ -551,17 +405,14 @@ const TravelForm = () => {
       if (!formData.carHire.dropoffDate) errors['carHire.dropoffDate'] = 'Drop-off date is required';
     }
     
-    // Accommodation validation
     if (formData.requireAccommodation) {
       if (!formData.accommodation.type) errors['accommodation.type'] = 'Accommodation type is required';
     }
     
-    // Emergency contact validation
     if (!formData.emergencyContact.name) errors['emergencyContact.name'] = 'Emergency contact name is required';
     if (!formData.emergencyContact.phone) errors['emergencyContact.phone'] = 'Emergency contact phone is required';
     if (!formData.emergencyContact.relationship) errors['emergencyContact.relationship'] = 'Relationship is required';
     
-    // Declarations validation
     if (!Object.values(formData.declarations).every(Boolean)) {
       errors.declarations = 'All declarations must be accepted';
     }
@@ -570,12 +421,10 @@ const TravelForm = () => {
     return Object.keys(errors).length === 0;
   };
 
-  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (validateForm()) {
-      // In a real application, this would submit to ServiceNow
       toast({
         title: "Form Submitted",
         description: "Your travel request has been submitted successfully",
@@ -599,152 +448,15 @@ const TravelForm = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="mt-6">
-        {/* Contact Information Section */}
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Contact Information</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="fullName">
-                Your Name
-              </label>
-              <Input 
-                id="fullName"
-                type="text" 
-                value={formData.travellers[0].fullName}
-                onChange={(e) => updateTravellerField(formData.travellers[0].id, 'fullName', e.target.value)}
-                placeholder="John Smith"
-                className="w-full"
-              />
-            </div>
+        <ContactInformation 
+          formData={formData}
+          updateTravellerField={updateTravellerField}
+          handleInputChange={handleInputChange}
+          addTraveller={addTraveller}
+          removeTraveller={removeTraveller}
+          formErrors={formErrors}
+        />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="employeeId">
-                Employee Number
-              </label>
-              <Input 
-                id="employeeId"
-                type="text" 
-                value={formData.travellers[0].employeeId}
-                onChange={(e) => updateTravellerField(formData.travellers[0].id, 'employeeId', e.target.value)}
-                placeholder="EMP12345"
-                className="w-full"
-              />
-            </div>
-
-            <div className="col-span-2">
-              <label className="inline-flex items-center text-gray-700 mb-4">
-                <input 
-                  type="checkbox"
-                  className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 mr-2"
-                  checked={formData.bookingOnBehalf}
-                  onChange={(e) => {
-                    setFormData(prev => ({
-                      ...prev,
-                      bookingOnBehalf: e.target.checked,
-                      travellers: e.target.checked ? [
-                        formData.travellers[0],
-                        {
-                          id: Date.now().toString(),
-                          fullName: '',
-                          employeeId: '',
-                          region: '',
-                          costCentre: '',
-                          mobile: '',
-                        }
-                      ] : [formData.travellers[0]]
-                    }));
-                  }}
-                />
-                I am booking on behalf of someone else
-              </label>
-            </div>
-
-            {formData.bookingOnBehalf && formData.travellers.slice(1).map((traveller) => (
-              <div key={traveller.id} className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 p-4 border rounded-lg bg-gray-50">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Traveller Name <span className="text-red-500">*</span>
-                  </label>
-                  <Input 
-                    type="text"
-                    value={traveller.fullName}
-                    onChange={(e) => updateTravellerField(traveller.id, 'fullName', e.target.value)}
-                    className="w-full"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Traveller Employee ID <span className="text-red-500">*</span>
-                  </label>
-                  <Input 
-                    type="text"
-                    value={traveller.employeeId}
-                    onChange={(e) => updateTravellerField(traveller.id, 'employeeId', e.target.value)}
-                    className="w-full"
-                  />
-                </div>
-              </div>
-            ))}
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Mobile Number <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <Smartphone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
-                <Input 
-                  type="tel"
-                  value={formData.travellers[0].mobile}
-                  onChange={(e) => updateTravellerField(formData.travellers[0].id, 'mobile', e.target.value)}
-                  className="pl-10 w-full"
-                  placeholder="+61 XXX XXX XXX"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Alternative Email (optional)
-              </label>
-              <Input 
-                type="email"
-                className="w-full"
-                placeholder="alternative@email.com"
-              />
-            </div>
-
-            {/* Emergency Contact Fields */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Emergency Contact Name (optional)
-              </label>
-              <Input 
-                type="text"
-                name="emergencyContact.name"
-                value={formData.emergencyContact.name}
-                onChange={handleInputChange}
-                className="w-full"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Emergency Contact Number (optional)
-              </label>
-              <Input 
-                type="tel"
-                name="emergencyContact.phone"
-                value={formData.emergencyContact.phone}
-                onChange={handleInputChange}
-                className="w-full"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Job & Costing Information Section */}
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
           <h2 className="text-2xl font-semibold text-gray-800 mb-6">Job & Costing Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -851,11 +563,9 @@ const TravelForm = () => {
           </div>
         </div>
 
-        {/* Travel Requirements Section */}
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
           <h2 className="text-2xl font-semibold text-gray-800 mb-6">Travel Requirements</h2>
 
-          {/* Flights */}
           <div className="mb-4">
             <label className="inline-flex items-center text-gray-700 mb-4">
               <input
@@ -950,7 +660,6 @@ const TravelForm = () => {
             )}
           </div>
 
-          {/* Ferry Travel */}
           <div className="mb-4 mt-8">
             <label className="inline-flex items-center text-gray-700 mb-4">
               <input
@@ -1036,7 +745,6 @@ const TravelForm = () => {
             )}
           </div>
 
-          {/* Car Hire */}
           <div className="mb-4 mt-8">
             <label className="inline-flex items-center text-gray-700 mb-4">
               <input
@@ -1128,7 +836,6 @@ const TravelForm = () => {
             )}
           </div>
 
-          {/* Accommodation */}
           <div className="mb-4 mt-8">
             <label className="inline-flex items-center text-gray-700 mb-4">
               <input
@@ -1178,7 +885,16 @@ const TravelForm = () => {
             )}
           </div>
 
-          {/* Declarations */}
+          {formData.requireLAFHA && (
+            <LAFHASection
+              formData={formData}
+              handleInputChange={handleInputChange}
+              updateLAFHA={updateLAFHA}
+              addLAFHA={addLAFHA}
+              removeLAFHA={removeLAFHA}
+            />
+          )}
+
           <div className="bg-white rounded-lg shadow-sm border p-6 mt-8">
             <h2 className="text-2xl font-semibold text-gray-800 mb-6">Declarations</h2>
             <div className="space-y-4">
