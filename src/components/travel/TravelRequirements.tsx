@@ -2,7 +2,7 @@
 import React from 'react';
 import { Input } from "@/components/ui/input";
 import { FlightLeg, Ferry, CarHire } from '@/types/travel';
-import { Plane, Ferry as FerryIcon, Car } from 'lucide-react';
+import { Plane, Ship, Car } from 'lucide-react';
 
 interface TravelRequirementsProps {
   formData: {
@@ -39,7 +39,7 @@ const TravelRequirements: React.FC<TravelRequirementsProps> = ({
       <h2 className="text-2xl font-semibold text-gray-800 mb-6">Travel Requirements</h2>
 
       {/* Flights Section */}
-      <div className="mb-4">
+      <div className="mb-8">
         <label className="inline-flex items-center text-gray-700 mb-4">
           <input
             type="checkbox"
@@ -53,96 +53,172 @@ const TravelRequirements: React.FC<TravelRequirementsProps> = ({
         </label>
 
         {formData.requireFlights && (
-          <>
-            {formErrors.flightLegs && (
-              <div className="text-red-500 text-sm mt-1">{formErrors.flightLegs}</div>
-            )}
-
-            {formData.flightLegs.map((leg, index) => (
-              <div key={leg.id} className="mb-4 p-4 border rounded-lg bg-gray-50">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      From <span className="text-red-500">*</span>
-                    </label>
-                    <Input
-                      type="text"
-                      placeholder="Airport code or city"
-                      value={leg.from}
-                      onChange={(e) => updateFlightLegField(leg.id, 'from', e.target.value)}
-                      className="w-full"
-                    />
-                    {formErrors[`flightLegs[${index}].from`] && (
-                      <div className="text-red-500 text-sm mt-1">{formErrors[`flightLegs[${index}].from`]}</div>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      To <span className="text-red-500">*</span>
-                    </label>
-                    <Input
-                      type="text"
-                      placeholder="Airport code or city"
-                      value={leg.to}
-                      onChange={(e) => updateFlightLegField(leg.id, 'to', e.target.value)}
-                      className="w-full"
-                    />
-                    {formErrors[`flightLegs[${index}].to`] && (
-                      <div className="text-red-500 text-sm mt-1">{formErrors[`flightLegs[${index}].to`]}</div>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Date <span className="text-red-500">*</span>
-                    </label>
-                    <Input
-                      type="date"
-                      value={leg.date}
-                      onChange={(e) => updateFlightLegField(leg.id, 'date', e.target.value)}
-                      className="w-full"
-                    />
-                    {formErrors[`flightLegs[${index}].date`] && (
-                      <div className="text-red-500 text-sm mt-1">{formErrors[`flightLegs[${index}].date`]}</div>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Preferred Time
-                    </label>
-                    <Input
-                      type="time"
-                      value={leg.time}
-                      onChange={(e) => updateFlightLegField(leg.id, 'time', e.target.value)}
-                      className="w-full"
-                    />
-                  </div>
+          <div className="space-y-6">
+            {/* Outward Flight */}
+            <div className="bg-gray-50 p-6 rounded-lg border">
+              <h3 className="text-lg font-semibold text-blue-800 mb-4">Outward Flight</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Departure Location <span className="text-red-500">*</span>
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Airport code or city"
+                    value={formData.flightLegs[0]?.from || ''}
+                    onChange={(e) => updateFlightLegField(formData.flightLegs[0]?.id || '', 'from', e.target.value)}
+                    className="w-full"
+                  />
                 </div>
-                <button
-                  type="button"
-                  onClick={() => removeFlightLeg(leg.id)}
-                  className="mt-4 text-red-600 hover:text-red-800"
-                >
-                  Remove Flight
-                </button>
-              </div>
-            ))}
 
-            <button
-              type="button"
-              className="text-blue-600 hover:text-blue-800 font-medium flex items-center"
-              onClick={addFlightLeg}
-            >
-              + Add Flight Leg
-            </button>
-          </>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Destination <span className="text-red-500">*</span>
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Airport code or city"
+                    value={formData.flightLegs[0]?.to || ''}
+                    onChange={(e) => updateFlightLegField(formData.flightLegs[0]?.id || '', 'to', e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Outward Flight Date <span className="text-red-500">*</span>
+                  </label>
+                  <Input
+                    type="date"
+                    value={formData.flightLegs[0]?.date || ''}
+                    onChange={(e) => updateFlightLegField(formData.flightLegs[0]?.id || '', 'date', e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Preferred Time
+                  </label>
+                  <select
+                    value={formData.flightLegs[0]?.time || ''}
+                    onChange={(e) => updateFlightLegField(formData.flightLegs[0]?.id || '', 'time', e.target.value)}
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  >
+                    <option value="">No preference</option>
+                    <option value="morning">Morning</option>
+                    <option value="afternoon">Afternoon</option>
+                    <option value="evening">Evening</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Return Flight */}
+            <div className="bg-gray-50 p-6 rounded-lg border">
+              <h3 className="text-lg font-semibold text-blue-800 mb-4">Return Flight</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Departure Location <span className="text-red-500">*</span>
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Airport code or city"
+                    value={formData.flightLegs[1]?.from || ''}
+                    onChange={(e) => updateFlightLegField(formData.flightLegs[1]?.id || '', 'from', e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Destination <span className="text-red-500">*</span>
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Airport code or city"
+                    value={formData.flightLegs[1]?.to || ''}
+                    onChange={(e) => updateFlightLegField(formData.flightLegs[1]?.id || '', 'to', e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Return Flight Date <span className="text-red-500">*</span>
+                  </label>
+                  <Input
+                    type="date"
+                    value={formData.flightLegs[1]?.date || ''}
+                    onChange={(e) => updateFlightLegField(formData.flightLegs[1]?.id || '', 'date', e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Preferred Time
+                  </label>
+                  <select
+                    value={formData.flightLegs[1]?.time || ''}
+                    onChange={(e) => updateFlightLegField(formData.flightLegs[1]?.id || '', 'time', e.target.value)}
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  >
+                    <option value="">No preference</option>
+                    <option value="morning">Morning</option>
+                    <option value="afternoon">Afternoon</option>
+                    <option value="evening">Evening</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Additional Flight Details */}
+            <div className="bg-gray-50 p-6 rounded-lg border">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Frequent Flyer Number (optional)
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Enter your frequent flyer number"
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Seating Preference
+                  </label>
+                  <select
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  >
+                    <option value="">No preference</option>
+                    <option value="window">Window</option>
+                    <option value="aisle">Aisle</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Meal Requirements / Notes (optional)
+                </label>
+                <textarea
+                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  rows={3}
+                  placeholder="Enter any special meal requirements or additional notes"
+                />
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
       {/* Ferry Section */}
-      <div className="mb-4 mt-8">
+      <div className="mb-8">
         <label className="inline-flex items-center text-gray-700 mb-4">
           <input
             type="checkbox"
@@ -151,7 +227,7 @@ const TravelRequirements: React.FC<TravelRequirementsProps> = ({
             checked={formData.requireFerry}
             onChange={handleInputChange}
           />
-          <FerryIcon className="mr-2 h-4 w-4" />
+          <Ship className="mr-2 h-4 w-4" />
           Ferry Travel Required
         </label>
 
@@ -236,7 +312,7 @@ const TravelRequirements: React.FC<TravelRequirementsProps> = ({
       </div>
 
       {/* Car Hire Section */}
-      <div className="mb-4 mt-8">
+      <div className="mb-4">
         <label className="inline-flex items-center text-gray-700 mb-4">
           <input
             type="checkbox"
