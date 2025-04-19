@@ -985,4 +985,571 @@ const TravelForm = () => {
                     <div className="servicenow-error">{formErrors.ferries}</div>
                   )}
                   
-                  {formData.ferries.map((ferry, index)
+                  {formData.ferries.map((ferry, index) => (
+                    <div key={ferry.id} className="servicenow-repeatable-block">
+                      <button 
+                        type="button" 
+                        className="servicenow-remove-button"
+                        onClick={() => removeFerry(ferry.id)}
+                      >
+                        ✕
+                      </button>
+                      
+                      <div className="servicenow-grid">
+                        <div className="servicenow-col-6">
+                          <div className="servicenow-form-group">
+                            <label className="servicenow-label servicenow-required">From</label>
+                            <input 
+                              type="text" 
+                              className="servicenow-input"
+                              value={ferry.from}
+                              onChange={(e) => updateFerryField(ferry.id, 'from', e.target.value)}
+                              required
+                            />
+                            {formErrors[`ferries[${index}].from`] && (
+                              <div className="servicenow-error">{formErrors[`ferries[${index}].from`]}</div>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="servicenow-col-6">
+                          <div className="servicenow-form-group">
+                            <label className="servicenow-label servicenow-required">To</label>
+                            <input 
+                              type="text" 
+                              className="servicenow-input"
+                              value={ferry.to}
+                              onChange={(e) => updateFerryField(ferry.id, 'to', e.target.value)}
+                              required
+                            />
+                            {formErrors[`ferries[${index}].to`] && (
+                              <div className="servicenow-error">{formErrors[`ferries[${index}].to`]}</div>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="servicenow-col-6">
+                          <div className="servicenow-form-group">
+                            <label className="servicenow-label servicenow-required">Date</label>
+                            <input 
+                              type="date" 
+                              className="servicenow-input"
+                              value={ferry.date}
+                              onChange={(e) => updateFerryField(ferry.id, 'date', e.target.value)}
+                              required
+                            />
+                            {formErrors[`ferries[${index}].date`] && (
+                              <div className="servicenow-error">{formErrors[`ferries[${index}].date`]}</div>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="servicenow-col-6">
+                          <div className="servicenow-form-group">
+                            <label className="servicenow-label">Time</label>
+                            <input 
+                              type="time" 
+                              className="servicenow-input"
+                              value={ferry.time}
+                              onChange={(e) => updateFerryField(ferry.id, 'time', e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="servicenow-col-12">
+                          <div className="servicenow-form-group">
+                            <label className="servicenow-label">Notes</label>
+                            <textarea 
+                              className="servicenow-textarea"
+                              value={ferry.notes}
+                              onChange={(e) => updateFerryField(ferry.id, 'notes', e.target.value)}
+                              placeholder="Vehicle details, etc."
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  <button 
+                    type="button" 
+                    className="servicenow-add-button"
+                    onClick={addFerry}
+                  >
+                    + Add another ferry
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* 5. CAR HIRE */}
+        <div className="servicenow-section">
+          <div 
+            className={`servicenow-section-header ${sections.carHire ? 'open' : ''}`} 
+            onClick={() => toggleSection('carHire')}
+          >
+            <span className={`servicenow-toggle-indicator ${sections.carHire ? 'open' : ''}`}>
+              5. CAR HIRE
+            </span>
+          </div>
+          
+          {sections.carHire && (
+            <div className="servicenow-section-content">
+              <div className="servicenow-form-group">
+                <label className="servicenow-label">
+                  <input 
+                    type="checkbox" 
+                    className="servicenow-checkbox" 
+                    name="requireCarHire"
+                    checked={formData.requireCarHire}
+                    onChange={handleInputChange}
+                  />
+                  Do you require car hire?
+                </label>
+              </div>
+              
+              {formData.requireCarHire && (
+                <>
+                  <div className="servicenow-form-group">
+                    <label className="servicenow-label">Pickup Location</label>
+                    <input 
+                      type="text" 
+                      className="servicenow-input"
+                      value={formData.carHire.pickupLocation}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  
+                  <div className="servicenow-form-group">
+                    <label className="servicenow-label">Pickup Date</label>
+                    <input 
+                      type="date" 
+                      className="servicenow-input"
+                      value={formData.carHire.pickupDate}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  
+                  <div className="servicenow-form-group">
+                    <label className="servicenow-label">Drop-off Location</label>
+                    <input 
+                      type="text" 
+                      className="servicenow-input"
+                      value={formData.carHire.dropoffLocation}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  
+                  <div className="servicenow-form-group">
+                    <label className="servicenow-label">Drop-off Date</label>
+                    <input 
+                      type="date" 
+                      className="servicenow-input"
+                      value={formData.carHire.dropoffDate}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  
+                  <div className="servicenow-form-group">
+                    <label className="servicenow-label">Car Type</label>
+                    <input 
+                      type="text" 
+                      className="servicenow-input"
+                      value={formData.carHire.carType}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  
+                  <div className="servicenow-form-group">
+                    <label className="servicenow-label">
+                      <input 
+                        type="checkbox" 
+                        className="servicenow-checkbox" 
+                        name="carHire.shared"
+                        checked={formData.carHire.shared}
+                        onChange={handleInputChange}
+                      />
+                      Shared car?
+                    </label>
+                  </div>
+                  
+                  {formData.carHire.shared && (
+                    <div className="servicenow-form-group">
+                      <label className="servicenow-label">Shared with</label>
+                      <input 
+                        type="text" 
+                        className="servicenow-input"
+                        value={formData.carHire.sharedWith}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* 6. ACCOMMODATION */}
+        <div className="servicenow-section">
+          <div 
+            className={`servicenow-section-header ${sections.accommodation ? 'open' : ''}`} 
+            onClick={() => toggleSection('accommodation')}
+          >
+            <span className={`servicenow-toggle-indicator ${sections.accommodation ? 'open' : ''}`}>
+              6. ACCOMMODATION
+            </span>
+          </div>
+          
+          {sections.accommodation && (
+            <div className="servicenow-section-content">
+              <div className="servicenow-form-group">
+                <label className="servicenow-label">
+                  <input 
+                    type="checkbox" 
+                    className="servicenow-checkbox" 
+                    name="requireAccommodation"
+                    checked={formData.requireAccommodation}
+                    onChange={handleInputChange}
+                  />
+                  Do you require accommodation?
+                </label>
+              </div>
+              
+              {formData.requireAccommodation && (
+                <>
+                  <div className="servicenow-form-group">
+                    <label className="servicenow-label">Accommodation Type</label>
+                    <select 
+                      className="servicenow-select"
+                      name="accommodation.type"
+                      value={formData.accommodation.type}
+                      onChange={handleInputChange}
+                    >
+                      <option value="">Select type</option>
+                      <option value="hotel">Hotel</option>
+                      <option value="private">Private</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  
+                  <div className="servicenow-form-group">
+                    <label className="servicenow-label">Notes</label>
+                    <textarea 
+                      className="servicenow-textarea"
+                      value={formData.accommodation.notes}
+                      onChange={handleInputChange}
+                      placeholder="Any additional notes"
+                    ></textarea>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* 7. LAFHA */}
+        <div className="servicenow-section">
+          <div 
+            className={`servicenow-section-header ${sections.lafha ? 'open' : ''}`} 
+            onClick={() => toggleSection('lafha')}
+          >
+            <span className={`servicenow-toggle-indicator ${sections.lafha ? 'open' : ''}`}>
+              7. LAFHA
+            </span>
+          </div>
+          
+          {sections.lafha && (
+            <div className="servicenow-section-content">
+              <div className="servicenow-form-group">
+                <label className="servicenow-label">
+                  <input 
+                    type="checkbox" 
+                    className="servicenow-checkbox" 
+                    name="requireLAFHA"
+                    checked={formData.requireLAFHA}
+                    onChange={handleInputChange}
+                  />
+                  Do you require LAFHA?
+                </label>
+              </div>
+              
+              {formData.requireLAFHA && (
+                <>
+                  {formErrors.lafha && (
+                    <div className="servicenow-error">{formErrors.lafha}</div>
+                  )}
+                  
+                  {formData.lafha.map((item, index) => (
+                    <div key={item.id} className="servicenow-repeatable-block">
+                      <button 
+                        type="button" 
+                        className="servicenow-remove-button"
+                        onClick={() => removeLAFHA(index)}
+                      >
+                        ✕
+                      </button>
+                      
+                      <div className="servicenow-grid">
+                        <div className="servicenow-col-6">
+                          <div className="servicenow-form-group">
+                            <label className="servicenow-label servicenow-required">Category</label>
+                            <select 
+                              className="servicenow-select"
+                              name={`lafha[${index}].category`}
+                              value={item.category}
+                              onChange={handleInputChange}
+                              required
+                            >
+                              <option value="">Select category</option>
+                              <option value="Full Day (OR03)">Full Day (OR03)</option>
+                              <option value="Private (OR23)">Private (OR23)</option>
+                              <option value="Employee-arranged (OR24)">Employee-arranged (OR24)</option>
+                              <option value="Remote Area">Remote Area</option>
+                              <option value="Short Notice / Substandard">Short Notice / Substandard</option>
+                              <option value="Incidentals (0A57)">Incidentals (0A57)</option>
+                              <option value="Breakfast">Breakfast</option>
+                              <option value="Lunch">Lunch</option>
+                              <option value="Dinner">Dinner</option>
+                            </select>
+                            {formErrors[`lafha[${index}].category`] && (
+                              <div className="servicenow-error">{formErrors[`lafha[${index}].category`]}</div>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="servicenow-col-6">
+                          <div className="servicenow-form-group">
+                            <label className="servicenow-label servicenow-required">Rate</label>
+                            <input 
+                              type="number" 
+                              className="servicenow-input"
+                              value={item.rate}
+                              onChange={handleInputChange}
+                              required
+                            />
+                            {formErrors[`lafha[${index}].rate`] && (
+                              <div className="servicenow-error">{formErrors[`lafha[${index}].rate`]}</div>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="servicenow-col-6">
+                          <div className="servicenow-form-group">
+                            <label className="servicenow-label servicenow-required">Days</label>
+                            <input 
+                              type="number" 
+                              className="servicenow-input"
+                              value={item.days}
+                              onChange={handleInputChange}
+                              required
+                            />
+                            {formErrors[`lafha[${index}].days`] && (
+                              <div className="servicenow-error">{formErrors[`lafha[${index}].days`]}</div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  <button 
+                    type="button" 
+                    className="servicenow-add-button"
+                    onClick={addLAFHA}
+                  >
+                    + Add another LAFHA entry
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* 8. EMERGENCY CONTACT */}
+        <div className="servicenow-section">
+          <div 
+            className={`servicenow-section-header ${sections.emergencyContact ? 'open' : ''}`} 
+            onClick={() => toggleSection('emergencyContact')}
+          >
+            <span className={`servicenow-toggle-indicator ${sections.emergencyContact ? 'open' : ''}`}>
+              8. EMERGENCY CONTACT
+            </span>
+          </div>
+          
+          {sections.emergencyContact && (
+            <div className="servicenow-section-content">
+              <div className="servicenow-form-group">
+                <label className="servicenow-label">
+                  <input 
+                    type="checkbox" 
+                    className="servicenow-checkbox" 
+                    name="requireEmergencyContact"
+                    checked={formData.requireEmergencyContact}
+                    onChange={handleInputChange}
+                  />
+                  Do you require an emergency contact?
+                </label>
+              </div>
+              
+              {formData.requireEmergencyContact && (
+                <>
+                  <div className="servicenow-form-group">
+                    <label className="servicenow-label">Name</label>
+                    <input 
+                      type="text" 
+                      className="servicenow-input"
+                      value={formData.emergencyContact.name}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  
+                  <div className="servicenow-form-group">
+                    <label className="servicenow-label">Phone</label>
+                    <input 
+                      type="text" 
+                      className="servicenow-input"
+                      value={formData.emergencyContact.phone}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  
+                  <div className="servicenow-form-group">
+                    <label className="servicenow-label">Relationship</label>
+                    <input 
+                      type="text" 
+                      className="servicenow-input"
+                      value={formData.emergencyContact.relationship}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* 9. DECLARATIONS */}
+        <div className="servicenow-section">
+          <div 
+            className={`servicenow-section-header ${sections.declarations ? 'open' : ''}`} 
+            onClick={() => toggleSection('declarations')}
+          >
+            <span className={`servicenow-toggle-indicator ${sections.declarations ? 'open' : ''}`}>
+              9. DECLARATIONS
+            </span>
+          </div>
+          
+          {sections.declarations && (
+            <div className="servicenow-section-content">
+              <div className="servicenow-form-group">
+                <label className="servicenow-label">
+                  <input 
+                    type="checkbox" 
+                    className="servicenow-checkbox" 
+                    name="declarations.correctAndApproved"
+                    checked={formData.declarations.correctAndApproved}
+                    onChange={handleInputChange}
+                  />
+                  I have read and understood the terms and conditions of this form.
+                </label>
+              </div>
+              
+              <div className="servicenow-form-group">
+                <label className="servicenow-label">
+                  <input 
+                    type="checkbox" 
+                    className="servicenow-checkbox" 
+                    name="declarations.payrollDeduction"
+                    checked={formData.declarations.payrollDeduction}
+                    onChange={handleInputChange}
+                  />
+                  I understand that my travel expenses will be subject to payroll deduction.
+                </label>
+              </div>
+              
+              <div className="servicenow-form-group">
+                <label className="servicenow-label">
+                  <input 
+                    type="checkbox" 
+                    className="servicenow-checkbox" 
+                    name="declarations.audit"
+                    checked={formData.declarations.audit}
+                    onChange={handleInputChange}
+                  />
+                  I understand that my travel expenses will be subject to audit.
+                </label>
+              </div>
+              
+              <div className="servicenow-form-group">
+                <label className="servicenow-label">
+                  <input 
+                    type="checkbox" 
+                    className="servicenow-checkbox" 
+                    name="declarations.ctmBookings"
+                    checked={formData.declarations.ctmBookings}
+                    onChange={handleInputChange}
+                  />
+                  I understand that my travel bookings will be subject to CTM.
+                </label>
+              </div>
+              
+              <div className="servicenow-form-group">
+                <label className="servicenow-label">
+                  <input 
+                    type="checkbox" 
+                    className="servicenow-checkbox" 
+                    name="declarations.noPersonalCards"
+                    checked={formData.declarations.noPersonalCards}
+                    onChange={handleInputChange}
+                  />
+                  I understand that I will not be provided with personal cards for travel.
+                </label>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 10. COST PREVIEW */}
+        <div className="servicenow-section">
+          <div 
+            className={`servicenow-section-header ${sections.costPreview ? 'open' : ''}`} 
+            onClick={() => toggleSection('costPreview')}
+          >
+            <span className={`servicenow-toggle-indicator ${sections.costPreview ? 'open' : ''}`}>
+              10. COST PREVIEW
+            </span>
+          </div>
+          
+          {sections.costPreview && (
+            <div className="servicenow-section-content">
+              <div className="servicenow-form-group">
+                <label className="servicenow-label">Total Cost Estimate</label>
+                <input 
+                  type="number" 
+                  className="servicenow-input"
+                  value={costEstimate}
+                  readOnly
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Submit Button */}
+        <div className="servicenow-footer">
+          <button 
+            type="submit"
+            className="servicenow-button"
+          >
+            Submit Travel Request
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default TravelForm;
