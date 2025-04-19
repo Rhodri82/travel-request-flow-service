@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 
-// Type definitions for our form data
+// Update the Traveller interface to include alternativeEmail
 interface Traveller {
   id: string;
   fullName: string;
@@ -9,6 +9,7 @@ interface Traveller {
   region: string;
   costCentre: string;
   mobile: string;
+  alternativeEmail?: string; // New optional field
   role?: string;
 }
 
@@ -100,6 +101,7 @@ const defaultFormData: TravelFormData = {
     region: '',
     costCentre: '',
     mobile: '',
+    alternativeEmail: '',
   }],
   purpose: '',
   travelType: '',
@@ -349,6 +351,7 @@ const TravelForm = () => {
       region: '',
       costCentre: '',
       mobile: '',
+      alternativeEmail: '',
     };
     
     setFormData(prev => ({
@@ -711,6 +714,21 @@ const TravelForm = () => {
                           value={traveller.mobile}
                           onChange={(e) => updateTravellerField(traveller.id, 'mobile', e.target.value)}
                           placeholder="Enter mobile number"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="servicenow-col-6">
+                      <div className="servicenow-form-group">
+                        <label className="servicenow-label">
+                          Alternative Email
+                        </label>
+                        <input 
+                          type="email" 
+                          className="servicenow-input"
+                          value={traveller.alternativeEmail || ''}
+                          onChange={(e) => updateTravellerField(traveller.id, 'alternativeEmail', e.target.value)}
+                          placeholder="Enter alternative email"
                         />
                       </div>
                     </div>
