@@ -1,5 +1,5 @@
 
-import { TravelForm } from '../components/travel-form/TravelForm';
+import TravelForm from "../components/TravelForm";
 
 const Index = () => {
   return (
