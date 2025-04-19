@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 
@@ -241,6 +242,7 @@ const TravelForm = () => {
           setFormData(prev => ({
             ...prev,
             lafha: [{
+              id: Date.now().toString(), // Add the id property
               category: formData.accommodation.type === 'private' ? 'Private (OR23)' : 'Employee-arranged (OR24)',
               rate: defaultRate,
               days: days
