@@ -949,6 +949,309 @@ const TravelForm = () => {
               </>
             )}
           </div>
+
+          {/* Ferry Travel */}
+          <div className="mb-4 mt-8">
+            <label className="inline-flex items-center text-gray-700 mb-4">
+              <input
+                type="checkbox"
+                className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 mr-2"
+                name="requireFerry"
+                checked={formData.requireFerry}
+                onChange={handleInputChange}
+              />
+              Ferry Travel Required
+            </label>
+
+            {formData.requireFerry && (
+              <>
+                {formErrors.ferries && (
+                  <div className="text-red-500 text-sm mt-1">{formErrors.ferries}</div>
+                )}
+
+                {formData.ferries.map((ferry, index) => (
+                  <div key={ferry.id} className="mb-4 p-4 border rounded-lg bg-gray-50">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          From <span className="text-red-500">*</span>
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="Departure port"
+                          value={ferry.from}
+                          onChange={(e) => updateFerryField(ferry.id, 'from', e.target.value)}
+                          className="w-full"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          To <span className="text-red-500">*</span>
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="Arrival port"
+                          value={ferry.to}
+                          onChange={(e) => updateFerryField(ferry.id, 'to', e.target.value)}
+                          className="w-full"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Date <span className="text-red-500">*</span>
+                        </label>
+                        <Input
+                          type="date"
+                          value={ferry.date}
+                          onChange={(e) => updateFerryField(ferry.id, 'date', e.target.value)}
+                          className="w-full"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Preferred Time
+                        </label>
+                        <Input
+                          type="time"
+                          value={ferry.time}
+                          onChange={(e) => updateFerryField(ferry.id, 'time', e.target.value)}
+                          className="w-full"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  className="text-blue-600 hover:text-blue-800 font-medium flex items-center"
+                  onClick={addFerry}
+                >
+                  + Add Ferry Journey
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* Car Hire */}
+          <div className="mb-4 mt-8">
+            <label className="inline-flex items-center text-gray-700 mb-4">
+              <input
+                type="checkbox"
+                className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 mr-2"
+                name="requireCarHire"
+                checked={formData.requireCarHire}
+                onChange={handleInputChange}
+              />
+              Car Hire Required
+            </label>
+
+            {formData.requireCarHire && (
+              <div className="p-4 border rounded-lg bg-gray-50">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Pickup Location <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      name="carHire.pickupLocation"
+                      value={formData.carHire.pickupLocation}
+                      onChange={handleInputChange}
+                      placeholder="Airport/City"
+                      className="w-full"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Pickup Date <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="date"
+                      name="carHire.pickupDate"
+                      value={formData.carHire.pickupDate}
+                      onChange={handleInputChange}
+                      className="w-full"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Drop-off Location <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="text"
+                      name="carHire.dropoffLocation"
+                      value={formData.carHire.dropoffLocation}
+                      onChange={handleInputChange}
+                      placeholder="Airport/City"
+                      className="w-full"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Drop-off Date <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="date"
+                      name="carHire.dropoffDate"
+                      value={formData.carHire.dropoffDate}
+                      onChange={handleInputChange}
+                      className="w-full"
+                    />
+                  </div>
+
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Car Type
+                    </label>
+                    <select
+                      name="carHire.carType"
+                      value={formData.carHire.carType}
+                      onChange={handleInputChange}
+                      className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    >
+                      <option value="small">Small</option>
+                      <option value="medium">Medium</option>
+                      <option value="large">Large</option>
+                      <option value="suv">SUV</option>
+                      <option value="luxury">Luxury</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Accommodation */}
+          <div className="mb-4 mt-8">
+            <label className="inline-flex items-center text-gray-700 mb-4">
+              <input
+                type="checkbox"
+                className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 mr-2"
+                name="requireAccommodation"
+                checked={formData.requireAccommodation}
+                onChange={handleInputChange}
+              />
+              Accommodation Required
+            </label>
+
+            {formData.requireAccommodation && (
+              <div className="p-4 border rounded-lg bg-gray-50">
+                <div className="grid grid-cols-1 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Accommodation Type <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="accommodation.type"
+                      value={formData.accommodation.type}
+                      onChange={handleInputChange}
+                      className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    >
+                      <option value="hotel">Hotel</option>
+                      <option value="private">Private Accommodation</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Additional Notes
+                    </label>
+                    <textarea
+                      name="accommodation.notes"
+                      value={formData.accommodation.notes}
+                      onChange={handleInputChange}
+                      className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                      rows={3}
+                      placeholder="Any specific requirements or preferences..."
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Declarations */}
+          <div className="bg-white rounded-lg shadow-sm border p-6 mt-8">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">Declarations</h2>
+            <div className="space-y-4">
+              <label className="flex items-start">
+                <input
+                  type="checkbox"
+                  name="declarations.correctAndApproved"
+                  checked={formData.declarations.correctAndApproved}
+                  onChange={handleInputChange}
+                  className="mt-1 rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                />
+                <span className="ml-2 text-sm text-gray-600">
+                  I declare that all information provided is correct and approved by my manager
+                </span>
+              </label>
+
+              <label className="flex items-start">
+                <input
+                  type="checkbox"
+                  name="declarations.payrollDeduction"
+                  checked={formData.declarations.payrollDeduction}
+                  onChange={handleInputChange}
+                  className="mt-1 rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                />
+                <span className="ml-2 text-sm text-gray-600">
+                  I understand that any personal expenses will be deducted from my payroll
+                </span>
+              </label>
+
+              <label className="flex items-start">
+                <input
+                  type="checkbox"
+                  name="declarations.audit"
+                  checked={formData.declarations.audit}
+                  onChange={handleInputChange}
+                  className="mt-1 rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                />
+                <span className="ml-2 text-sm text-gray-600">
+                  I understand this booking may be subject to audit
+                </span>
+              </label>
+
+              <label className="flex items-start">
+                <input
+                  type="checkbox"
+                  name="declarations.ctmBookings"
+                  checked={formData.declarations.ctmBookings}
+                  onChange={handleInputChange}
+                  className="mt-1 rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                />
+                <span className="ml-2 text-sm text-gray-600">
+                  I agree to book all travel through CTM Travel
+                </span>
+              </label>
+
+              <label className="flex items-start">
+                <input
+                  type="checkbox"
+                  name="declarations.noPersonalCards"
+                  checked={formData.declarations.noPersonalCards}
+                  onChange={handleInputChange}
+                  className="mt-1 rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                />
+                <span className="ml-2 text-sm text-gray-600">
+                  I understand not to use personal credit cards for business travel
+                </span>
+              </label>
+            </div>
+            {formErrors.declarations && (
+              <div className="text-red-500 text-sm mt-4">{formErrors.declarations}</div>
+            )}
+          </div>
+
         </div>
 
         <div className="flex justify-end mt-6">
