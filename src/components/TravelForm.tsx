@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 
@@ -698,6 +697,21 @@ const TravelForm = () => {
                         {formErrors[`travellers[${index}].employeeId`] && (
                           <div className="servicenow-error">{formErrors[`travellers[${index}].employeeId`]}</div>
                         )}
+                      </div>
+                    </div>
+                    
+                    <div className="servicenow-col-6">
+                      <div className="servicenow-form-group">
+                        <label className="servicenow-label">
+                          Mobile Number
+                        </label>
+                        <input 
+                          type="tel" 
+                          className="servicenow-input"
+                          value={traveller.mobile}
+                          onChange={(e) => updateTravellerField(traveller.id, 'mobile', e.target.value)}
+                          placeholder="Enter mobile number"
+                        />
                       </div>
                     </div>
                   </div>
@@ -1658,4 +1672,3 @@ const TravelForm = () => {
 };
 
 export default TravelForm;
-
