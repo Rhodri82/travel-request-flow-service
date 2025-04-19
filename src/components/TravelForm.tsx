@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 
@@ -163,10 +164,7 @@ const TravelForm = () => {
   const [sections, setSections] = useState({
     travellerDetails: true,
     purposeAndDates: true,
-    flightRequests: true,
-    ferryRequests: true,
-    carHire: true,
-    accommodation: true,
+    travelRequirements: true,
     lafha: true,
     declarations: true,
     emergencyContact: true,
@@ -240,8 +238,9 @@ const TravelForm = () => {
         if (formData.lafha.length === 0) {
           setFormData(prev => ({
             ...prev,
+            requireLAFHA: true, // Auto-enable LAFHA
             lafha: [{
-              id: Date.now().toString(), // Add the id property
+              id: Date.now().toString(),
               category: formData.accommodation.type === 'private' ? 'Private (OR23)' : 'Employee-arranged (OR24)',
               rate: defaultRate,
               days: days
@@ -282,6 +281,15 @@ const TravelForm = () => {
             [declarationKey]: checked
           }
         }));
+      } else if (name.includes('.')) {
+        const [parentKey, childKey] = name.split('.');
+        setFormData(prev => ({
+          ...prev,
+          [parentKey]: {
+            ...(prev[parentKey as keyof TravelFormData] as object),
+            [childKey]: checked
+          }
+        }));
       } else {
         setFormData(prev => ({
           ...prev,
@@ -294,13 +302,34 @@ const TravelForm = () => {
       // Handle nested properties
       if (name.includes('.')) {
         const [parentKey, childKey] = name.split('.');
-        setFormData(prev => ({
-          ...prev,
-          [parentKey]: {
-            ...(prev[parentKey as keyof TravelFormData] as object),
-            [childKey]: value
-          }
-        }));
+        
+        if (parentKey === 'lafha') {
+          // Handle LAFHA array updates
+          const index = parseInt(childKey);
+          const fieldName = name.split('.')[2];
+          
+          setFormData(prev => {
+            const updatedLafha = [...prev.lafha];
+            if (updatedLafha[index]) {
+              updatedLafha[index] = {
+                ...updatedLafha[index],
+                [fieldName]: fieldName === 'rate' || fieldName === 'days' ? Number(value) : value
+              };
+            }
+            return {
+              ...prev,
+              lafha: updatedLafha
+            };
+          });
+        } else {
+          setFormData(prev => ({
+            ...prev,
+            [parentKey]: {
+              ...(prev[parentKey as keyof TravelFormData] as object),
+              [childKey]: value
+            }
+          }));
+        }
       } 
       // Handle top-level properties
       else {
@@ -423,7 +452,7 @@ const TravelForm = () => {
       id: Date.now().toString(),
       category: 'Full Day (OR03)',
       rate: LAFHA_RATES['Full Day (OR03)'],
-      days: formData.nights
+      days: formData.nights || 1 // Default to 1 if nights is 0
     };
     
     setFormData(prev => ({
@@ -434,20 +463,44 @@ const TravelForm = () => {
 
   // Remove LAFHA entry
   const removeLAFHA = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      lafha: prev.lafha.filter((_, i) => i !== index)
-    }));
+    setFormData(prev => {
+      const updatedLafha = [...prev.lafha];
+      updatedLafha.splice(index, 1);
+      return {
+        ...prev,
+        lafha: updatedLafha,
+        // If no LAFHA entries left, disable LAFHA requirement
+        requireLAFHA: updatedLafha.length > 0 ? prev.requireLAFHA : false
+      };
+    });
   };
 
-  // Update LAFHA entry
+  // Update LAFHA entry (fixed to correctly handle the category change with rate update)
   const updateLAFHA = (index: number, field: keyof LAFHADetails, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      lafha: prev.lafha.map((item, i) => 
-        i === index ? { ...item, [field]: value } : item
-      )
-    }));
+    setFormData(prev => {
+      const updatedLafha = [...prev.lafha];
+      
+      if (updatedLafha[index]) {
+        // If updating category, also update the rate
+        if (field === 'category' && typeof value === 'string') {
+          updatedLafha[index] = {
+            ...updatedLafha[index],
+            category: value,
+            rate: LAFHA_RATES[value as keyof typeof LAFHA_RATES] || updatedLafha[index].rate
+          };
+        } else {
+          updatedLafha[index] = {
+            ...updatedLafha[index],
+            [field]: field === 'rate' || field === 'days' ? Number(value) : value
+          };
+        }
+      }
+      
+      return {
+        ...prev,
+        lafha: updatedLafha
+      };
+    });
   };
 
   // Validate form before submission
@@ -803,15 +856,15 @@ const TravelForm = () => {
         {/* 3. TRAVEL REQUIREMENTS */}
         <div className="servicenow-section">
           <div 
-            className={`servicenow-section-header ${sections.flightRequests ? 'open' : ''}`} 
-            onClick={() => toggleSection('flightRequests')}
+            className={`servicenow-section-header ${sections.travelRequirements ? 'open' : ''}`} 
+            onClick={() => toggleSection('travelRequirements')}
           >
-            <span className={`servicenow-toggle-indicator ${sections.flightRequests ? 'open' : ''}`}>
+            <span className={`servicenow-toggle-indicator ${sections.travelRequirements ? 'open' : ''}`}>
               3. TRAVEL REQUIREMENTS
             </span>
           </div>
           
-          {sections.flightRequests && (
+          {sections.travelRequirements && (
             <div className="servicenow-section-content">
               {/* Flights */}
               <div className="servicenow-form-group border-b pb-4 mb-4">
@@ -1089,54 +1142,92 @@ const TravelForm = () => {
                 
                 {formData.requireCarHire && (
                   <>
-                    <div className="servicenow-form-group">
-                      <label className="servicenow-label">Pickup Location</label>
-                      <input 
-                        type="text" 
-                        className="servicenow-input"
-                        value={formData.carHire.pickupLocation}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    
-                    <div className="servicenow-form-group">
-                      <label className="servicenow-label">Pickup Date</label>
-                      <input 
-                        type="date" 
-                        className="servicenow-input"
-                        value={formData.carHire.pickupDate}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    
-                    <div className="servicenow-form-group">
-                      <label className="servicenow-label">Drop-off Location</label>
-                      <input 
-                        type="text" 
-                        className="servicenow-input"
-                        value={formData.carHire.dropoffLocation}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    
-                    <div className="servicenow-form-group">
-                      <label className="servicenow-label">Drop-off Date</label>
-                      <input 
-                        type="date" 
-                        className="servicenow-input"
-                        value={formData.carHire.dropoffDate}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    
-                    <div className="servicenow-form-group">
-                      <label className="servicenow-label">Car Type</label>
-                      <input 
-                        type="text" 
-                        className="servicenow-input"
-                        value={formData.carHire.carType}
-                        onChange={handleInputChange}
-                      />
+                    <div className="servicenow-grid">
+                      <div className="servicenow-col-6">
+                        <div className="servicenow-form-group">
+                          <label className="servicenow-label servicenow-required">Pickup Location</label>
+                          <input 
+                            type="text" 
+                            className="servicenow-input"
+                            name="carHire.pickupLocation"
+                            value={formData.carHire.pickupLocation}
+                            onChange={handleInputChange}
+                            required
+                          />
+                          {formErrors['carHire.pickupLocation'] && (
+                            <div className="servicenow-error">{formErrors['carHire.pickupLocation']}</div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="servicenow-col-6">
+                        <div className="servicenow-form-group">
+                          <label className="servicenow-label servicenow-required">Pickup Date</label>
+                          <input 
+                            type="date" 
+                            className="servicenow-input"
+                            name="carHire.pickupDate"
+                            value={formData.carHire.pickupDate}
+                            onChange={handleInputChange}
+                            required
+                          />
+                          {formErrors['carHire.pickupDate'] && (
+                            <div className="servicenow-error">{formErrors['carHire.pickupDate']}</div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="servicenow-col-6">
+                        <div className="servicenow-form-group">
+                          <label className="servicenow-label servicenow-required">Drop-off Location</label>
+                          <input 
+                            type="text" 
+                            className="servicenow-input"
+                            name="carHire.dropoffLocation"
+                            value={formData.carHire.dropoffLocation}
+                            onChange={handleInputChange}
+                            required
+                          />
+                          {formErrors['carHire.dropoffLocation'] && (
+                            <div className="servicenow-error">{formErrors['carHire.dropoffLocation']}</div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="servicenow-col-6">
+                        <div className="servicenow-form-group">
+                          <label className="servicenow-label servicenow-required">Drop-off Date</label>
+                          <input 
+                            type="date" 
+                            className="servicenow-input"
+                            name="carHire.dropoffDate"
+                            value={formData.carHire.dropoffDate}
+                            onChange={handleInputChange}
+                            required
+                          />
+                          {formErrors['carHire.dropoffDate'] && (
+                            <div className="servicenow-error">{formErrors['carHire.dropoffDate']}</div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="servicenow-col-6">
+                        <div className="servicenow-form-group">
+                          <label className="servicenow-label">Car Type</label>
+                          <select 
+                            className="servicenow-select"
+                            name="carHire.carType"
+                            value={formData.carHire.carType}
+                            onChange={handleInputChange}
+                          >
+                            <option value="small">Small</option>
+                            <option value="medium">Medium</option>
+                            <option value="large">Large</option>
+                            <option value="suv">SUV</option>
+                            <option value="van">Van</option>
+                          </select>
+                        </div>
+                      </div>
                     </div>
                     
                     <div className="servicenow-form-group">
@@ -1158,6 +1249,7 @@ const TravelForm = () => {
                         <input 
                           type="text" 
                           className="servicenow-input"
+                          name="carHire.sharedWith"
                           value={formData.carHire.sharedWith}
                           onChange={handleInputChange}
                         />
@@ -1190,17 +1282,20 @@ const TravelForm = () => {
                         value={formData.accommodation.type}
                         onChange={handleInputChange}
                       >
-                        <option value="">Select type</option>
                         <option value="hotel">Hotel</option>
                         <option value="private">Private</option>
                         <option value="other">Other</option>
                       </select>
+                      {formErrors['accommodation.type'] && (
+                        <div className="servicenow-error">{formErrors['accommodation.type']}</div>
+                      )}
                     </div>
                     
                     <div className="servicenow-form-group">
                       <label className="servicenow-label">Notes</label>
                       <textarea 
                         className="servicenow-textarea"
+                        name="accommodation.notes"
                         value={formData.accommodation.notes}
                         onChange={handleInputChange}
                         placeholder="Any additional notes"
@@ -1261,21 +1356,14 @@ const TravelForm = () => {
                             <label className="servicenow-label servicenow-required">Category</label>
                             <select 
                               className="servicenow-select"
-                              name={`lafha[${index}].category`}
                               value={item.category}
-                              onChange={handleInputChange}
+                              onChange={(e) => updateLAFHA(index, 'category', e.target.value)}
                               required
                             >
                               <option value="">Select category</option>
-                              <option value="Full Day (OR03)">Full Day (OR03)</option>
-                              <option value="Private (OR23)">Private (OR23)</option>
-                              <option value="Employee-arranged (OR24)">Employee-arranged (OR24)</option>
-                              <option value="Remote Area">Remote Area</option>
-                              <option value="Short Notice / Substandard">Short Notice / Substandard</option>
-                              <option value="Incidentals (0A57)">Incidentals (0A57)</option>
-                              <option value="Breakfast">Breakfast</option>
-                              <option value="Lunch">Lunch</option>
-                              <option value="Dinner">Dinner</option>
+                              {Object.keys(LAFHA_RATES).map(rate => (
+                                <option key={rate} value={rate}>{rate}</option>
+                              ))}
                             </select>
                             {formErrors[`lafha[${index}].category`] && (
                               <div className="servicenow-error">{formErrors[`lafha[${index}].category`]}</div>
@@ -1283,14 +1371,15 @@ const TravelForm = () => {
                           </div>
                         </div>
                         
-                        <div className="servicenow-col-6">
+                        <div className="servicenow-col-3">
                           <div className="servicenow-form-group">
-                            <label className="servicenow-label servicenow-required">Rate</label>
+                            <label className="servicenow-label servicenow-required">Rate ($)</label>
                             <input 
                               type="number" 
                               className="servicenow-input"
+                              step="0.01"
                               value={item.rate}
-                              onChange={handleInputChange}
+                              onChange={(e) => updateLAFHA(index, 'rate', e.target.value)}
                               required
                             />
                             {formErrors[`lafha[${index}].rate`] && (
@@ -1299,19 +1388,28 @@ const TravelForm = () => {
                           </div>
                         </div>
                         
-                        <div className="servicenow-col-6">
+                        <div className="servicenow-col-3">
                           <div className="servicenow-form-group">
                             <label className="servicenow-label servicenow-required">Days</label>
                             <input 
                               type="number" 
                               className="servicenow-input"
+                              min="1"
                               value={item.days}
-                              onChange={handleInputChange}
+                              onChange={(e) => updateLAFHA(index, 'days', e.target.value)}
                               required
                             />
                             {formErrors[`lafha[${index}].days`] && (
                               <div className="servicenow-error">{formErrors[`lafha[${index}].days`]}</div>
                             )}
+                          </div>
+                        </div>
+                        
+                        <div className="servicenow-col-12">
+                          <div className="servicenow-form-group">
+                            <div className="servicenow-calculator">
+                              Total: ${(item.rate * item.days).toFixed(2)}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -1359,34 +1457,45 @@ const TravelForm = () => {
               
               {formData.requireEmergencyContact && (
                 <>
-                  <div className="servicenow-form-group">
-                    <label className="servicenow-label">Name</label>
-                    <input 
-                      type="text" 
-                      className="servicenow-input"
-                      value={formData.emergencyContact.name}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  
-                  <div className="servicenow-form-group">
-                    <label className="servicenow-label">Phone</label>
-                    <input 
-                      type="text" 
-                      className="servicenow-input"
-                      value={formData.emergencyContact.phone}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  
-                  <div className="servicenow-form-group">
-                    <label className="servicenow-label">Relationship</label>
-                    <input 
-                      type="text" 
-                      className="servicenow-input"
-                      value={formData.emergencyContact.relationship}
-                      onChange={handleInputChange}
-                    />
+                  <div className="servicenow-grid">
+                    <div className="servicenow-col-4">
+                      <div className="servicenow-form-group">
+                        <label className="servicenow-label">Name</label>
+                        <input 
+                          type="text" 
+                          className="servicenow-input"
+                          name="emergencyContact.name"
+                          value={formData.emergencyContact.name}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="servicenow-col-4">
+                      <div className="servicenow-form-group">
+                        <label className="servicenow-label">Phone</label>
+                        <input 
+                          type="text" 
+                          className="servicenow-input"
+                          name="emergencyContact.phone"
+                          value={formData.emergencyContact.phone}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="servicenow-col-4">
+                      <div className="servicenow-form-group">
+                        <label className="servicenow-label">Relationship</label>
+                        <input 
+                          type="text" 
+                          className="servicenow-input"
+                          name="emergencyContact.relationship"
+                          value={formData.emergencyContact.relationship}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </>
               )}
@@ -1491,12 +1600,45 @@ const TravelForm = () => {
               <div className="servicenow-form-group">
                 <label className="servicenow-label">Total Cost Estimate</label>
                 <input 
-                  type="number" 
-                  className="servicenow-input"
-                  value={costEstimate}
+                  type="text" 
+                  className="servicenow-input servicenow-readonly"
+                  value={`$${costEstimate.toFixed(2)}`}
                   readOnly
                 />
+                <div className="servicenow-helper-text">
+                  This is an estimate based on LAFHA allowances. Actual costs may vary.
+                </div>
               </div>
+              
+              {formData.lafha.length > 0 && (
+                <div className="servicenow-cost-breakdown mt-4">
+                  <h4 className="servicenow-subtitle mb-2">LAFHA Breakdown</h4>
+                  <table className="servicenow-table w-full">
+                    <thead>
+                      <tr>
+                        <th>Category</th>
+                        <th>Rate</th>
+                        <th>Days</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {formData.lafha.map((item, index) => (
+                        <tr key={item.id}>
+                          <td>{item.category}</td>
+                          <td>${item.rate.toFixed(2)}</td>
+                          <td>{item.days}</td>
+                          <td>${(item.rate * item.days).toFixed(2)}</td>
+                        </tr>
+                      ))}
+                      <tr className="servicenow-total-row">
+                        <td colSpan={3} className="text-right font-semibold">Total LAFHA</td>
+                        <td className="font-semibold">${costEstimate.toFixed(2)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -1516,3 +1658,4 @@ const TravelForm = () => {
 };
 
 export default TravelForm;
+
