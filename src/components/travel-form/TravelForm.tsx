@@ -11,7 +11,6 @@ const TravelFormContent = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Add your form submission logic here
     console.log('Form submitted:', formData);
   };
 

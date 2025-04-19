@@ -1,6 +1,5 @@
-
 import React, { createContext, useContext, useState } from 'react';
-import { Traveller, TravelFormData } from '../types/travel';
+import { Traveller, TravelFormData } from '../../types/travel';
 
 interface TravelFormContextType {
   formData: TravelFormData;
@@ -49,4 +48,3 @@ export const TravelFormProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     </TravelFormContext.Provider>
   );
 };
-
