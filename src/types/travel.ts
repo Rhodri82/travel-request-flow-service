@@ -7,6 +7,7 @@ export interface Traveller {
   costCentre: string;
   mobile: string;
   role?: string;
+  workOrder?: string; // Added for ServiceNow compatibility
 }
 
 export interface FlightLeg {
@@ -16,6 +17,10 @@ export interface FlightLeg {
   date: string;
   time: string;
   airlinePreference: string;
+  seatPreference?: string; // Added for ServiceNow compatibility
+  frequentFlyer?: string; // Added for ServiceNow compatibility
+  mealPreference?: string; // Added for ServiceNow compatibility
+  notes?: string; // Added for ServiceNow compatibility
 }
 
 export interface Ferry {
@@ -25,6 +30,8 @@ export interface Ferry {
   date: string;
   time: string;
   notes: string;
+  carOnFerry?: boolean; // Added for ServiceNow compatibility
+  vehicleDetails?: string; // Added for ServiceNow compatibility
 }
 
 export interface CarHire {
@@ -35,11 +42,26 @@ export interface CarHire {
   carType: string;
   shared: boolean;
   sharedWith: string;
+  fuelCardRequired?: boolean; // Added for ServiceNow compatibility
+  notes?: string; // Added for ServiceNow compatibility
+}
+
+export interface OwnVehicle { // Added for ServiceNow compatibility
+  estimatedKilometers: number;
+  reimbursementRequested: boolean;
+  vehicleDetails: string;
 }
 
 export interface AccommodationDetails {
   type: 'hotel' | 'private' | 'other';
   notes: string;
+  location?: string; // Added for ServiceNow compatibility
+  address?: string; // Added for ServiceNow compatibility
+  dateRange?: { start: string; end: string }; // Added for ServiceNow compatibility
+  isRemoteArea?: boolean; // Added for ServiceNow compatibility
+  isAboriginalLands?: boolean; // Added for ServiceNow compatibility
+  isSubstandard?: boolean; // Added for ServiceNow compatibility
+  isShortNotice?: boolean; // Added for ServiceNow compatibility
 }
 
 export interface LAFHADetails {
@@ -47,6 +69,18 @@ export interface LAFHADetails {
   category: string;
   rate: number;
   days: number;
+  payInAdvance?: boolean; // Added for ServiceNow compatibility
+  mealsProvided?: { // Added for ServiceNow compatibility
+    date: string;
+    breakfast: boolean;
+    lunch: boolean;
+    dinner: boolean;
+  }[];
+}
+
+export interface WorksiteLocation { // Added for ServiceNow compatibility
+  location: string;
+  dateRange: { start: string; end: string };
 }
 
 export interface EmergencyContact {
@@ -84,5 +118,21 @@ export interface TravelFormData {
     audit: boolean;
     ctmBookings: boolean;
     noPersonalCards: boolean;
-  }
+  };
+  // New fields for ServiceNow compatibility
+  travelFor: 'myself' | 'someone' | 'group'; // Added for ServiceNow compatibility
+  applyWorkOrderToAll?: boolean; // Added for ServiceNow compatibility
+  travelAsPartOfGroup?: boolean; // Added for ServiceNow compatibility
+  worksiteDetails?: { // Added for ServiceNow compatibility
+    primaryWorksite: string;
+    additionalLocations: WorksiteLocation[];
+  };
+  personalTravel?: { // Added for ServiceNow compatibility
+    included: boolean;
+    dates?: string[];
+  };
+  travelClassification?: 'short' | 'long' | 'fbt'; // Added for ServiceNow compatibility
+  requireOwnVehicle?: boolean; // Added for ServiceNow compatibility
+  ownVehicle?: OwnVehicle; // Added for ServiceNow compatibility
+  additionalNotes?: string; // Added for ServiceNow compatibility
 }
