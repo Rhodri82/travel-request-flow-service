@@ -60,7 +60,8 @@ const defaultFormData: TravelFormData = {
     audit: false,
     ctmBookings: false,
     noPersonalCards: false
-  }
+  },
+  travelFor: 'myself'
 };
 
 const TravelForm = () => {
